@@ -372,35 +372,6 @@ const toggleEmployeeList = () => {
   setShowEmployeeList(!showEmployeeList);
 };
 
-const handleDeleteTask = async (taskId) => {
-  try {
-    // Create a copy of the tasks array without the task to be deleted
-    const updatedTasks = tasks.filter((task) => task.id !== taskId);
-
-    // Update the frontend state by removing the task
-    setTasks(updatedTasks);
-
-    // Update the tasks in Firestore
-    const supervisorDocRef = doc(db, "teamleaders", currentUser.uid);
-    await updateDoc(supervisorDocRef, {
-      tasks: updatedTasks,
-    });
-
-    setSuccessMessage("Task deleted successfully");
-    setError(""); // Clear any previous error messages
-    setTimeout(() => {
-      setSuccessMessage("");
-    }, 1000);
-    fetchTasks();
-  } catch (err) {
-    setError("Failed to delete task: " + err.message);
-    console.error("Delete task error", err);
-    setTimeout(() => {
-      setSuccessMessage("");
-    }, 1000);
-  }
-};
-  
 const sortTasksByPriority = (taskA, taskB) => {
   const priorityOrder = { high: 1, medium: 2, low: 3 };
   return priorityOrder[taskA.priority] - priorityOrder[taskB.priority];
@@ -703,7 +674,6 @@ const handleChangeStatusToInProgress = async (taskId) => {
           <th>Status</th>
           <th>End Date</th>
           <th>Priority</th>
-          <th>Delete</th>
           <th>Mark as Completed</th>
           <th>Change Status</th>
         </tr>
@@ -716,7 +686,6 @@ const handleChangeStatusToInProgress = async (taskId) => {
           <TaskRow
             key={task.id}
             task={task}
-            onDeleteTask={handleDeleteTask}
             onMarkAsCompleted={handleMarkAsCompleted}
             onChangeStatus={handleChangeStatusToInProgress}
           />

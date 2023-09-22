@@ -262,61 +262,38 @@ const toggleEmployeeList = () => {
     }
   }, [currentUser]);
 
-  const handleTeamLeaderClick = async (teamLeaderId) => {
-    setSelectedTeamLeaderId(teamLeaderId);
-  
-    const selectedTeamLeader = teamLeaders.find((teamLeader) => teamLeader.uid === teamLeaderId);
-    setSelectedTeamLeader(selectedTeamLeader);
-  
-    try {
-      const teamLeaderDocRef = doc(db, "teamleaders", teamLeaderId);
-      const teamLeaderDocSnapshot = await getDoc(teamLeaderDocRef);
-  
-      if (teamLeaderDocSnapshot.exists()) {
-        const teamLeaderData = teamLeaderDocSnapshot.data();
-        setSelectedTeamLeaderTasks(teamLeaderData.tasks || []);
-      }
-    } catch (err) {
-      setError("Failed to fetch team leader's tasks: " + err.message);
-      console.error("Fetch team leader tasks error", err);
-    }
-  
-    // Add the logic to display the SupervisorList
-    setShowSupervisorList(true);
-  };
-
   const toggleSupervisorBoxes = () => {
     setShowSupervisorBoxes(!showSupervisorBoxes);
   };
 
-  const handleDeleteTask = async (taskId) => {
-    try {
-      // Create a copy of the tasks array without the task to be deleted
-      const updatedTasks = tasks.filter((task) => task.id !== taskId);
+  // const handleDeleteTask = async (taskId) => {
+  //   try {
+  //     // Create a copy of the tasks array without the task to be deleted
+  //     const updatedTasks = tasks.filter((task) => task.id !== taskId);
 
-      // Update the frontend state by removing the task
-      setTasks(updatedTasks);
+  //     // Update the frontend state by removing the task
+  //     setTasks(updatedTasks);
 
-      // Update the tasks in Firestore
-      const HeadDocRef = doc(db, "heads", currentUser.uid);
-      await updateDoc(HeadDocRef, {
-        tasks: updatedTasks,
-      });
+  //     // Update the tasks in Firestore
+  //     const HeadDocRef = doc(db, "heads", currentUser.uid);
+  //     await updateDoc(HeadDocRef, {
+  //       tasks: updatedTasks,
+  //     });
 
-      setSuccessMessage("Task deleted successfully");
-      setError(""); // Clear any previous error messages
-      setTimeout(() => {
-        setSuccessMessage("");
-      }, 1000);
-      fetchTasks();
-    } catch (err) {
-      setError("Failed to delete task: " + err.message);
-      console.error("Delete task error", err);
-      setTimeout(() => {
-        setSuccessMessage("");
-      }, 1000);
-    }
-  };
+  //     setSuccessMessage("Task deleted successfully");
+  //     setError(""); // Clear any previous error messages
+  //     setTimeout(() => {
+  //       setSuccessMessage("");
+  //     }, 1000);
+  //     fetchTasks();
+  //   } catch (err) {
+  //     setError("Failed to delete task: " + err.message);
+  //     console.error("Delete task error", err);
+  //     setTimeout(() => {
+  //       setSuccessMessage("");
+  //     }, 1000);
+  //   }
+  // };
 
   const sortTasksByPriority = (taskA, taskB) => {
     const priorityOrder = { high: 1, medium: 2, low: 3 };
@@ -621,7 +598,6 @@ const toggleEmployeeList = () => {
               <th>Status</th>
               <th>End Date</th>
               <th>Priority</th>
-              <th>Delete</th>
               <th>Mark as Completed</th>
               <th>Change Status</th>
             </tr>
@@ -634,7 +610,6 @@ const toggleEmployeeList = () => {
               <TaskRow
                 key={task.id}
                 task={task}
-                onDeleteTask={handleDeleteTask}
                 onMarkAsCompleted={handleMarkAsCompleted}
                 onChangeStatus={handleChangeStatusToInProgress}
               />

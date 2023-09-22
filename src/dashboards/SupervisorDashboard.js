@@ -355,36 +355,6 @@ export default function SupervisorDashboard() {
     }
   };  
 
-  const handleDeleteTask = async (taskId) => {
-    try {
-      // Create a copy of the tasks array without the task to be deleted
-      const updatedTasks = tasks.filter((task) => task.id !== taskId);
-  
-      // Update the frontend state by removing the task
-      setTasks(updatedTasks);
-  
-      // Update the tasks in Firestore
-      const supervisorDocRef = doc(db, "supervisors", currentUser.uid);
-      await updateDoc(supervisorDocRef, {
-        tasks: updatedTasks,
-      });
-  
-      setSuccessMessage("Task deleted successfully");
-      setError(""); // Clear any previous error messages
-      setTimeout(() => {
-        setSuccessMessage("");
-      }, 1000);
-      fetchTasks();
-    } catch (err) {
-      setError("Failed to delete task: " + err.message);
-      console.error("Delete task error", err);
-      setTimeout(() => {
-        setSuccessMessage("");
-      }, 1000);
-    }
-  };
-  
-
   return (
     <div>
       <Card>
@@ -575,7 +545,6 @@ export default function SupervisorDashboard() {
             <th>Status</th>
             <th>End Date</th>
             <th>Priority</th>
-            <th>Delete</th>
             <th>Mark as Completed</th>
             <th>Change Status</th>
           </tr>
@@ -588,7 +557,6 @@ export default function SupervisorDashboard() {
             <TaskRow
               key={task.id}
               task={task}
-              onDeleteTask={handleDeleteTask}
               onMarkAsCompleted={handleMarkAsCompleted}
               onChangeStatus={handleChangeStatusToInProgress}
             />
