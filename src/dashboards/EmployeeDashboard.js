@@ -231,7 +231,6 @@ export default function EmployeeDashboard() {
                 <th>Status</th>
                 <th>End Date</th>
                 <th>Priority</th>
-                <th>Delete</th>
                 <th>Mark as Completed</th>
                 <th>Change Status</th>
               </tr>
@@ -244,7 +243,6 @@ export default function EmployeeDashboard() {
                 <TaskRow
                   key={task.id}
                   task={task}
-                  onDeleteTask={handleDeleteTask}
                   onMarkAsCompleted={handleMarkAsCompleted}
                   onChangeStatus={handleChangeStatusToInProgress}
                 />

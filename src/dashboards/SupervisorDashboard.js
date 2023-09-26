@@ -13,7 +13,6 @@ export default function SupervisorDashboard() {
   const { currentUser, logout } = useAuth();
   const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
   const [showTaskForm, setShowTaskForm] = useState(false);
-  const [selectedSupervisorTasks, setSelectedSupervisorTasks] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [employees, setEmployees] = useState([]); // Store employee data
   const [selectedEmployeeUIDs, setSelectedEmployeeUIDs] = useState([]); // Track selected employees' UIDs
@@ -251,22 +250,45 @@ export default function SupervisorDashboard() {
       }
     }, [currentUser]);
 
-  const fetchEmployees = async () => {
-    const employeesCollection = collection(db, "employees");
-    const employeesSnapshot = await getDocs(employeesCollection);
-    const employeesData = employeesSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setEmployees(employeesData);
-  };
+    const fetchEmployees = async (supervisorId) => {
+      try {
+        // Step 1: Get the supervisor's document data
+        const supervisorDocRef = doc(db, "supervisors", supervisorId);
+        const supervisorDocSnapshot = await getDoc(supervisorDocRef);
+    
+        if (supervisorDocSnapshot.exists()) {
+          const supervisorData = supervisorDocSnapshot.data();
+    
+          // Step 2: Access the "assigned" array in the supervisor's document data
+          if (supervisorData.assigned && supervisorData.assigned.length > 0) {
+            // Step 3: Use the employee UIDs from the "assigned" array
+            const employeeUIDs = supervisorData.assigned;
+    
+            // Step 4: Fetch the corresponding employee data from the "employees" collection
+            const employeesCollection = collection(db, "employees");
+            const employeesSnapshot = await getDocs(employeesCollection);
+            const employeesData = employeesSnapshot.docs
+              .map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+              }))
+              .filter((employee) => employeeUIDs.includes(employee.uid));
+    
+            setEmployees(employeesData);
+          }
+        }
+      } catch (error) {
+        setError("Failed to fetch employees: " + error.message);
+        console.error("Fetch employees error", error);
+      }
+    };
 
-  useEffect(() => {
-    if (currentUser) {
-      fetchEmployees();
-      // fetchSupervisorTasks();
-    }
-  }, [currentUser]);
+    useEffect(() => {
+      if (currentUser) {
+        fetchEmployees(currentUser.uid);
+      }
+    }, [currentUser]);
+    
 
   const handleMarkAsCompleted = async (taskId, newStatus) => {
     const collectionsToUpdate = ["supervisors", "employees", "teamleaders", "unitheads", "heads"];

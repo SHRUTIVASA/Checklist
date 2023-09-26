@@ -15,6 +15,12 @@ const HeadList = ({ heads, onFilterTasks, onHeadClick, onHeadBoxClick }) => {
   const [tasks, setTasks] = useState([]);
   const { currentUser, logout } = useAuth();
 
+  const handleClick = (headId, event) => {
+    if (onHeadClick) {
+      onHeadClick(headId, event);
+    }
+  };
+
   useEffect(() => {
     const fetchTaskStatistics = async (headId) => {
       try {

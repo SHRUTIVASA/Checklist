@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Form, Button, Card, Alert } from "react-bootstrap";
 import { useAuth } from "./contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
-import { doc, setDoc, collection, addDoc } from "firebase/firestore";
+import { doc, setDoc, collection, addDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import { db } from "./firebase"; 
 
 export default function Signup() {
@@ -62,6 +62,23 @@ export default function Signup() {
       await setDoc(userDocRef, userDocData); // Set the user document data
 
       console.log("User added with ID: ", user.uid);
+
+      if (role === "Head") {
+        await updateAdminDocument(user.uid);
+      }
+
+      async function updateAdminDocument(userUID) {
+        try {
+          const adminDocRef = doc(db, "admin", "admin-doc-id"); // Replace "admin-doc-id" with the actual admin document ID
+          await updateDoc(adminDocRef, {
+            assigned: arrayUnion(userUID) // Add the user's UID to the 'assigned' array
+          });
+    
+          console.log("User added to admin document: ", userUID);
+        } catch (error) {
+          console.error("Error updating admin document:", error);
+        }
+      }
 
       if (role === "Employee") {
         Navigate("/EmployeeDashboard");

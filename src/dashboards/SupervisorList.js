@@ -117,14 +117,6 @@ const SupervisorList = ({ supervisors, onFilterTasks, onSupervisorClick,  onSupe
     setSelectedSupervisorTasks([]);
   };
 
-  const handleSupervisorClick = (supervisorId) => {
-    const selectedSupervisor = supervisors.find((supervisor) => supervisor.uid === supervisorId);
-
-    if (selectedSupervisor) {
-      setSelectedSupervisorTasks(selectedSupervisor.tasks || []);
-    }
-  };
-
   const handleDeleteTask = async (taskId) => {
     try {
       // Create a copy of the tasks array without the task to be deleted

@@ -45,6 +45,8 @@ export default function UnitHeadDashboard() {
   const [selectedTeamLeaderInfo, setSelectedTeamLeaderInfo] = useState(null);
   const [showTeamLeaderBoxes, setShowTeamLeaderBoxes] = useState(false);
   const [showTeamLeaderList, setShowTeamLeaderList] = useState(false);
+  const [assignedEmployees, setAssignedEmployees] = useState([]);
+  const [filteredSupervisors, setFilteredSupervisors] = useState([]);
 
     const fetchTasks = async () => {
       try {
@@ -134,72 +136,80 @@ export default function UnitHeadDashboard() {
     setSelectedEmployeeId(employeeId);
   };
 
-  useEffect(() => {
-    const fetchSupervisors = async () => {
-      try {
-        const SupervisorsCollectionRef = collection(db, "supervisors");
-        const querySnapshot = await getDocs(SupervisorsCollectionRef);
+  const fetchSupervisors = async (teamLeaderId) => {
+    try {
+      // Step 1: Get the team leader's document data
+      const teamLeaderDocRef = doc(db, "teamleaders", teamLeaderId);
+      const teamLeaderDocSnapshot = await getDoc(teamLeaderDocRef);
 
-        const SupervisorsData = [];
+      if (teamLeaderDocSnapshot.exists()) {
+        const teamLeaderData = teamLeaderDocSnapshot.data();
 
-        querySnapshot.forEach((doc) => {
-          const supervisorData = doc.data();
-          SupervisorsData.push({
-            uid: doc.id,
-            name: supervisorData.name,
-            email: supervisorData.email,
-          });
-        });
+        // Step 2: Access the "assigned" array in the team leader's document data
+        if (teamLeaderData.assigned && teamLeaderData.assigned.length > 0) {
+          // Step 3: Use the supervisor UIDs from the "assigned" array
+          const supervisorUIDs = teamLeaderData.assigned;
 
-        setSupervisors(SupervisorsData);
-      } catch (err) {
-        setError("Failed to fetch Supervisors");
-        console.error("Fetch Supervisors error", err);
+          // Step 4: Fetch the corresponding supervisor data from the "supervisors" collection
+          const supervisorsCollection = collection(db, "supervisors");
+          const supervisorsSnapshot = await getDocs(supervisorsCollection);
+          const supervisorsData = supervisorsSnapshot.docs
+            .map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }))
+            .filter((supervisor) => supervisorUIDs.includes(supervisor.uid));
+
+          setSupervisors(supervisorsData);
+        }
       }
-    };
-
+    } catch (error) {
+      setError("Failed to fetch supervisor: " + error.message);
+      console.error("Fetch Supervisor error", error);
+    }
+  };
+  useEffect(() => {
     if (currentUser) {
-      fetchSupervisors();
+      fetchSupervisors(currentUser.uid);
     }
   }, [currentUser]);
 
- // Function to fetch supervisors and update the state
- const fetchSupervisors = async () => {
-  try {
-    // Assuming you have a "supervisors" collection in your Firestore
-    const supervisorsCollection = collection(db, "supervisors");
-    const supervisorsSnapshot = await getDocs(supervisorsCollection);
-    const supervisorsData = supervisorsSnapshot.docs.map((doc) => doc.data());
-    
-    setSupervisors(supervisorsData); // Update the supervisors state
-  } catch (err) {
-    setError("Failed to fetch supervisors: " + err.message);
-    console.error("Fetch supervisors error", err);
-  }
-};
 
   // Function to fetch employees
-  const fetchEmployees = async () => {
-    const employeesCollection = collection(db, "employees");
-    const employeesSnapshot = await getDocs(employeesCollection);
-    const employeesData = employeesSnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setEmployees(employeesData);
+  const fetchEmployees = async (supervisorId) => {
+    try {
+      // Step 1: Get the supervisor's document data
+      const supervisorDocRef = doc(db, "supervisors", supervisorId);
+      const supervisorDocSnapshot = await getDoc(supervisorDocRef);
+
+      if (supervisorDocSnapshot.exists()) {
+        const supervisorData = supervisorDocSnapshot.data();
+
+        // Step 2: Access the "assigned" array in the supervisor's document data
+        if (supervisorData.assigned && supervisorData.assigned.length > 0) {
+          // Step 3: Use the employee UIDs from the "assigned" array
+          const employeeUIDs = supervisorData.assigned;
+
+          // Step 4: Fetch the corresponding employee data from the "employees" collection
+          const employeesCollection = collection(db, "employees");
+          const employeesSnapshot = await getDocs(employeesCollection);
+          const employeesData = employeesSnapshot.docs
+            .map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }))
+            .filter((employee) => employeeUIDs.includes(employee.uid));
+
+          setEmployees(employeesData);
+        }
+      }
+    } catch (error) {
+      setError("Failed to fetch employees: " + error.message);
+      console.error("Fetch employees error", error);
+    }
+    fetchEmployees();
   };
 
-  useEffect(() => {
-    if (currentUser) {
-      fetchEmployees();
-    }
-  }, [currentUser]);
-
-
-useEffect(() => {
-  // Call the fetchSupervisors function when the component mounts
-  fetchSupervisors();
-}, []);
 
 const handleFilterTasks = (filteredTasks) => {
   // Update the state with the filtered tasks
@@ -213,29 +223,43 @@ const handleSupervisorBoxClick = async (supervisorId, event) => {
     if (clickedElement.classList.contains("bigbox")) {
       setSelectedSupervisorId(supervisorId);
 
-      const selectedSupervisor = supervisors.find((supervisor) => supervisor.uid === supervisorId);
-      setSelectedSupervisor(selectedSupervisor);
-
-      // Store the selected supervisor's information in the state
-      setSelectedSupervisorInfo(selectedSupervisor);
-
-      // Fetch and set the selected supervisor's tasks
       try {
+        // Fetch the supervisor's UID based on supervisorId
         const supervisorDocRef = doc(db, "supervisors", supervisorId);
         const supervisorDocSnapshot = await getDoc(supervisorDocRef);
 
         if (supervisorDocSnapshot.exists()) {
           const supervisorData = supervisorDocSnapshot.data();
-          setSelectedSupervisorTasks(supervisorData.tasks || []);
+          const supervisorUid = supervisorData.uid;
+
+          // Now, you have the supervisor's UID (supervisorUid) to use in further conditions
+
+          // Example: Fetch assigned employees for this supervisor
+          const assignedEmployeeUids = supervisorData.assigned || [];
+          const assignedEmployees = [];
+
+          for (const employeeUid of assignedEmployeeUids) {
+            const employeeDocRef = doc(db, "employees", employeeUid);
+            const employeeDocSnapshot = await getDoc(employeeDocRef);
+
+            if (employeeDocSnapshot.exists()) {
+              const employeeData = employeeDocSnapshot.data();
+              assignedEmployees.push(employeeData);
+            }
+          }
+
+          // Set the assigned employees in the component state
+          setAssignedEmployees(assignedEmployees);
         }
       } catch (err) {
-        setError("Failed to fetch supervisor's tasks: " + err.message);
-        console.error("Fetch supervisor tasks error", err);
+        setError("Failed to fetch supervisor's data: " + err.message);
+        console.error("Fetch supervisor data error", err);
       }
+
       toggleEmployeeList();
     }
   }
-};
+};   
 
 const toggleEmployeeBoxes = () => {
   setShowEmployeeBoxes(!showEmployeeBoxes);
@@ -357,22 +381,45 @@ const toggleEmployeeList = () => {
     }
   };  
 
-  const fetchTeamLeaders= async () => {
+  const fetchTeamLeaders = async (unitHeadId) => {
     try {
-      const teamLeadersCollection = collection(db, "teamleaders");
-      const teamLeadersSnapshot = await getDocs(teamLeadersCollection);
-      const teamLeadersData = teamLeadersSnapshot.docs.map((doc) => doc.data());
-      
-      setTeamLeaders(teamLeadersData);
-    } catch (err) {
-      setError("Failed to fetch Team Leaders: " + err.message);
-      console.error("Fetch unit Team Leaders error", err);
+      // Step 1: Get the unit head's document data
+      const unitHeadDocRef = doc(db, "unitheads", unitHeadId);
+      const unitHeadDocSnapshot = await getDoc(unitHeadDocRef);
+  
+      if (unitHeadDocSnapshot.exists()) {
+        const unitHeadData = unitHeadDocSnapshot.data();
+  
+        // Step 2: Access the "assigned" array in the unit head's document data
+        if (unitHeadData.assigned && unitHeadData.assigned.length > 0) {
+          // Step 3: Use the team leader UIDs from the "assigned" array
+          const teamLeaderUIDs = unitHeadData.assigned;
+  
+          // Step 4: Fetch the corresponding team leader data from the "teamleaders" collection
+          const teamLeadersCollection = collection(db, "teamleaders");
+          const teamLeadersSnapshot = await getDocs(teamLeadersCollection);
+          const teamLeadersData = teamLeadersSnapshot.docs
+            .map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }))
+            .filter((teamLeader) => teamLeaderUIDs.includes(teamLeader.uid));
+  
+          setTeamLeaders(teamLeadersData);
+        }
+      }
+    } catch (error) {
+      setError("Failed to fetch team leader: " + error.message);
+      console.error("Fetch Team Leader error", error);
     }
   };
-
+  
   useEffect(() => {
-    fetchTeamLeaders();
-  }, []);
+    if (currentUser) {
+      fetchTeamLeaders(currentUser.uid);
+    }
+  }, [currentUser]);
+  
 
   const handleTeamLeaderBoxClick = async (teamLeaderId, event) => {
     if (event) {
@@ -380,27 +427,45 @@ const toggleEmployeeList = () => {
       const clickedElement = event.target;
       if (clickedElement.classList.contains("bigbox")) {
         setSelectedTeamLeaderId(teamLeaderId);
-
-        const selectedTeamLeader = teamLeaders.find((teamLeader) => teamLeader.uid === teamLeaderId);
-        setSelectedTeamLeaderInfo(selectedTeamLeader);
-
+  
         try {
+          // Fetch the team leader's data
           const teamLeaderDocRef = doc(db, "teamleaders", teamLeaderId);
           const teamLeaderDocSnapshot = await getDoc(teamLeaderDocRef);
-
+  
           if (teamLeaderDocSnapshot.exists()) {
             const teamLeaderData = teamLeaderDocSnapshot.data();
-            setSelectedTeamLeaderTasks(teamLeaderData.tasks || []);
+  
+            // Get the assigned supervisor UIDs from the team leader's data
+            const supervisorUIDs = teamLeaderData.assigned || [];
+  
+            // Array to store supervisor data
+            const supervisorsData = [];
+  
+            // Fetch supervisor data for each UID
+            for (const supervisorUid of supervisorUIDs) {
+              const supervisorDocRef = doc(db, "supervisors", supervisorUid);
+              const supervisorDocSnapshot = await getDoc(supervisorDocRef);
+  
+              if (supervisorDocSnapshot.exists()) {
+                const supervisorData = supervisorDocSnapshot.data();
+                supervisorsData.push(supervisorData);
+              }
+            }
+  
+            // Update the state with the filtered supervisors
+            setFilteredSupervisors(supervisorsData);
           }
         } catch (err) {
           setError("Failed to fetch Team Leader's tasks: " + err.message);
           console.error("Fetch Team Leader tasks error", err);
         }
+  
         setShowSupervisorList(true);
         setShowTeamLeaderList(false);
       }
     }
-  };
+  };  
      
   const toggleteamLeaderBoxes = () => {
     setShowTeamLeaderBoxes(!showTeamLeaderBoxes);
@@ -416,7 +481,7 @@ const toggleEmployeeList = () => {
           {showEmployeeList ? (
             <div>
               <EmployeeList
-                employees={employees}
+                employees={assignedEmployees}
                 onFilterTasks={filterTasks}
                 onEmployeeClick={handleEmployeeClick}
               />
@@ -431,7 +496,7 @@ const toggleEmployeeList = () => {
           ) : showSupervisorList ? (
             <div>
               <SupervisorList
-                supervisors={supervisors}
+                supervisors={filteredSupervisors}
                 onFilterTasks={handleFilterTasks}
                 onSupervisorBoxClick={handleSupervisorBoxClick}
                 toggleEmployeeBoxes={toggleEmployeeBoxes}

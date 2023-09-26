@@ -43,9 +43,6 @@ function TaskRow({ task, onDeleteTask, onMarkAsCompleted, onChangeStatus }) {
       <td>{task.endDate}</td>
       <td>{task.priority}</td>
       <td>
-        <button onClick={() => onDeleteTask(task.taskId)}>Delete</button>
-      </td>
-      <td>
         <input
           type="checkbox"
           checked={status === "completed"}
