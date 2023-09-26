@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Form, Button, Card, Alert } from "react-bootstrap";
 import { useAuth } from "./contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
-import { doc, setDoc, collection, addDoc, updateDoc, arrayUnion } from "firebase/firestore";
+import { doc, setDoc, collection, addDoc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 import { db } from "./firebase"; 
 
 export default function Signup() {
@@ -67,18 +67,36 @@ export default function Signup() {
         await updateAdminDocument(user.uid);
       }
 
-      async function updateAdminDocument(userUID) {
-        try {
-          const adminDocRef = doc(db, "admin", "admin-doc-id"); // Replace "admin-doc-id" with the actual admin document ID
-          await updateDoc(adminDocRef, {
-            assigned: arrayUnion(userUID) // Add the user's UID to the 'assigned' array
-          });
-    
-          console.log("User added to admin document: ", userUID);
-        } catch (error) {
-          console.error("Error updating admin document:", error);
-        }
-      }
+// Function to update the admin document with the user's UID
+async function updateAdminDocument(userUID) {
+  try {
+    const adminDocRef = doc(db, "admin", "Vh5meuRE7VnxvufEkpkX"); 
+    const adminDocSnapshot = await getDoc(adminDocRef);
+
+    if (adminDocSnapshot.exists()) {
+      // If the admin document exists, update it by adding the user's UID to the 'assigned' array
+      const adminData = adminDocSnapshot.data();
+      const assignedArray = adminData.assigned || [];
+      assignedArray.push(userUID);
+
+      await updateDoc(adminDocRef, {
+        assigned: assignedArray // Update the 'assigned' array with the user's UID
+      });
+
+      console.log("User added to admin document: ", userUID);
+    } else {
+      // If the admin document doesn't exist, create it and set the 'assigned' array
+      await setDoc(adminDocRef, {
+        assigned: [userUID] // Create the 'assigned' array with the user's UID
+      });
+
+      console.log("Admin document created with user: ", userUID);
+    }
+  } catch (error) {
+    console.error("Error updating/admin document:", error);
+  }
+}
+
 
       if (role === "Employee") {
         Navigate("/EmployeeDashboard");
