@@ -3,7 +3,9 @@ import React, { useState } from "react";
 function TaskRow({ task, onDeleteTask, onMarkAsCompleted, onChangeStatus }) {
   // Initialize the status state for each task with its taskId
   const [status, setStatus] = useState(task.status);
-
+  const [deleteTaskLoading, setDeleteTaskLoading] = useState(false);
+  const [markAsCompletedLoading, setMarkAsCompletedLoading] = useState(false);
+  const [changeStatusToInProgressLoading, setChangeStatusToInProgressLoading] = useState(false);
   const handleStatusChange = async () => {
     const newStatus = status === "completed" ? "pending" : "completed";
     setStatus(newStatus);
@@ -47,13 +49,15 @@ function TaskRow({ task, onDeleteTask, onMarkAsCompleted, onChangeStatus }) {
           type="checkbox"
           checked={status === "completed"}
           onChange={handleStatusChange}
+          disabled={markAsCompletedLoading}
         />
       </td>
       <td>
         {status === "completed" ? (
           <span>Completed</span>
         ) : (
-          <button onClick={handleWorkInProgress}>Work in Progress</button>
+          <button onClick={handleWorkInProgress}
+          disabled={changeStatusToInProgressLoading}>{changeStatusToInProgressLoading ? "Changing Status..." : "Work in Progress"}</button>
         )}
       </td>
     </tr>

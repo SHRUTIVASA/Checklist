@@ -685,7 +685,7 @@ export default function AdminDashboard() {
     setShowUnitHeadBoxes(!showUnitHeadBoxes);
   };
 
-  const fetchTeamLeaders = async (unitHeadId) => {
+  const fetchTeamLeader = async (unitHeadId) => {
     try {
       // Step 1: Get the unit head's document data
       const unitHeadDocRef = doc(db, "unitheads", unitHeadId);
@@ -720,7 +720,7 @@ export default function AdminDashboard() {
   
   useEffect(() => {
     if (currentUser) {
-      fetchTeamLeaders(currentUser.uid);
+      fetchTeamLeader(currentUser.uid);
     }
   }, [currentUser]);
 
@@ -799,9 +799,6 @@ export default function AdminDashboard() {
       if (clickedElement.classList.contains("bigbox")) {
         setSelectedHeadId(headId);
   
-        const selectedHead = heads.find((head) => head.uid === headId);
-        setSelectedHeadInfo(selectedHead);
-  
         // Fetch and set the selected head's tasks
         try {
           const headDocRef = doc(db, "heads", headId);
@@ -812,9 +809,10 @@ export default function AdminDashboard() {
             setSelectedHeadTasks(headData.tasks || []);
   
             // Fetch unit head data for the selected head
-            const assignedUnitHeadUIDs = headData.assignedUnitHeads || [];
+            const assignedUnitHeadUIDs = headData.assigned || []; // Assuming 'assigned' is the array in the head's document
             const unitHeadsData = [];
   
+            // Filter unit heads based on assignedUnitHeadUIDs
             for (const unitHeadUid of assignedUnitHeadUIDs) {
               const unitHeadDocRef = doc(db, "unitheads", unitHeadUid);
               const unitHeadDocSnapshot = await getDoc(unitHeadDocRef);
@@ -1099,7 +1097,7 @@ export default function AdminDashboard() {
           {showUnitHeadList && !showHeadList && (
             <div>
               <UnitHeadList
-                unitHeads={unitHeads}
+                unitHeads={filteredUnitHeads}
                 onUnitHeadClick={(unitHeadId, event) =>
                   handleUnitHeadBoxClick(unitHeadId, event)
                 }

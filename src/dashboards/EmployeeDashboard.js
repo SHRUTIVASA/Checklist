@@ -18,6 +18,10 @@ export default function EmployeeDashboard() {
   const [completedTasks, setCompletedTasks] = useState([]);
   const [pendingTasks, setPendingTasks] = useState([]);
   const [inProgressTasks, setInProgressTasks] = useState([]);
+  const [deleteTaskLoading, setDeleteTaskLoading] = useState(false);
+  const [markAsCompletedLoading, setMarkAsCompletedLoading] = useState(false);
+  const [changeStatusToInProgressLoading, setChangeStatusToInProgressLoading] = useState(false);
+
 
 
   const sortTasksByPriority = (taskA, taskB) => {
@@ -100,9 +104,11 @@ export default function EmployeeDashboard() {
   };
 
   const handleMarkAsCompleted = async (taskId, newStatus) => {
+    
     const collectionsToUpdate = ["employees", "supervisors", "teamleaders", "unitheads", "heads"];
   
     try {
+      setMarkAsCompletedLoading(true);
       for (const collectionName of collectionsToUpdate) {
         const querySnapshot = await getDocs(collection(db, collectionName));
         
@@ -142,11 +148,14 @@ export default function EmployeeDashboard() {
     } catch (err) {
       setError("Failed to update task status");
       console.error("Update task status error", err);
+    }finally {
+      setMarkAsCompletedLoading(false); 
     }
   };
   
   const handleChangeStatusToInProgress = async (taskId) => {
     try {
+      setChangeStatusToInProgressLoading(true);
       const collectionsToUpdate = ["supervisors", "employees", "teamleaders", "unitheads", "heads"];
       const batch = writeBatch(db);
       let updateOccurred = false;
@@ -185,6 +194,8 @@ export default function EmployeeDashboard() {
     } catch (err) {
       setError("Failed to update task status");
       console.error("Update task status error", err);
+    }finally {
+      setChangeStatusToInProgressLoading(false); 
     }
   };  
   
