@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Card, Button, Alert, Table, Form, Modal } from "react-bootstrap";
 import { useAuth } from "../contexts/AuthContext";
-import SupervisorList from "./SupervisorList";
+import SupervisorList from "../SupervisorList";
 import {
   doc,
   updateDoc,
@@ -13,8 +13,8 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { v4 as uuidv4 } from "uuid";
-import EmployeeList from "./EmployeeList";
-import TaskRow from "./TaskRow";
+import EmployeeList from "../EmployeeList";
+import TaskRow from "../TaskRow";
 
 export default function TeamLeaderDashboard() {
   const [selectedSupervisorId, setSelectedSupervisorId] = useState(null);

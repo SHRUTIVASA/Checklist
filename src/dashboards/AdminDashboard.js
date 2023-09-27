@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Card, Button, Alert, Table, Form, Modal } from "react-bootstrap";
 import { useAuth } from "../contexts/AuthContext";
-import TeamLeaderList from "./TeamLeaderList";
 import {
   doc,
   updateDoc,
@@ -17,14 +16,16 @@ import {
 } from "firebase/firestore";
 import { db } from "../firebase";
 import { v4 as uuidv4 } from "uuid";
-import SupervisorList from "./SupervisorList";
-import EmployeeList from "./EmployeeList";
-import UnitHeadList from "./UnitHeadList";
-import HeadList from "./HeadList";
-import AssignEmployee from "./AssignEmployee";
-import AssignSupervisor from "./AssignSupervisor";
-import AssignTeamLeader from "./AssignTeamLeader";
-import AssignUnitHead from "./AssignUnitHead";
+import SupervisorList from "../SupervisorList";
+import EmployeeList from "../EmployeeList";
+import UnitHeadList from "../UnitHeadList";
+import TeamLeaderList from "../TeamLeaderList";
+import HeadList from "../HeadList";
+import AssignEmployee from "../AssignEmployee";
+import AssignSupervisor from "../AssignSupervisor";
+import AssignTeamLeader from "../AssignTeamLeader";
+import AssignUnitHead from "../AssignUnitHead";
+
 
 export default function AdminDashboard() {
   const { currentUser, logout } = useAuth();
@@ -809,24 +810,24 @@ export default function AdminDashboard() {
           if (headDocSnapshot.exists()) {
             const headData = headDocSnapshot.data();
             setSelectedHeadTasks(headData.tasks || []);
-          }
   
-          // Fetch unit head data for the selected head
-          const unitHeadUIDs = selectedHead.assignedUnitHeads || [];
-          const unitHeadsData = [];
+            // Fetch unit head data for the selected head
+            const assignedUnitHeadUIDs = headData.assignedUnitHeads || [];
+            const unitHeadsData = [];
   
-          for (const unitHeadUid of unitHeadUIDs) {
-            const unitHeadDocRef = doc(db, "unitheads", unitHeadUid);
-            const unitHeadDocSnapshot = await getDoc(unitHeadDocRef);
+            for (const unitHeadUid of assignedUnitHeadUIDs) {
+              const unitHeadDocRef = doc(db, "unitheads", unitHeadUid);
+              const unitHeadDocSnapshot = await getDoc(unitHeadDocRef);
   
-            if (unitHeadDocSnapshot.exists()) {
-              const unitHeadData = unitHeadDocSnapshot.data();
-              unitHeadsData.push(unitHeadData);
+              if (unitHeadDocSnapshot.exists()) {
+                const unitHeadData = unitHeadDocSnapshot.data();
+                unitHeadsData.push(unitHeadData);
+              }
             }
-          }
   
-          // Update the state with the filtered unit heads
-          setFilteredUnitHeads(unitHeadsData);
+            // Update the state with the filtered unit heads
+            setFilteredUnitHeads(unitHeadsData);
+          }
         } catch (err) {
           setError("Failed to fetch head's tasks and unit heads: " + err.message);
           console.error("Fetch head tasks and unit heads error", err);
@@ -836,8 +837,7 @@ export default function AdminDashboard() {
         setShowUnitHeadList(true);
       }
     }
-  };
-  
+  };  
 
   const toggleHeadBoxes = () => {
     setShowHeadBoxes(!showHeadBoxes);

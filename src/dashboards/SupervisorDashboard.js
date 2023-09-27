@@ -4,8 +4,8 @@ import { useAuth } from "../contexts/AuthContext";
 import { doc, updateDoc, collection, addDoc, getDocs, getDoc, writeBatch } from "firebase/firestore";
 import { db } from "../firebase";
 import { v4 as uuidv4 } from "uuid";
-import EmployeeList from "./EmployeeList";
-import TaskRow from "./TaskRow";
+import EmployeeList from "../EmployeeList";
+import TaskRow from "../TaskRow";
 
 export default function SupervisorDashboard() {
   const [error, setError] = useState("");

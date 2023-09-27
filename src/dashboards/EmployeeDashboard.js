@@ -4,7 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { doc, updateDoc, collection, addDoc, getDocs, getDoc, writeBatch } from "firebase/firestore";
 import { db } from "../firebase";
 import { useNavigate } from "react-router-dom";
-import TaskRow from "./TaskRow";
+import TaskRow from "../TaskRow";
 
 export default function EmployeeDashboard() {
   const [error, setError] = useState("");

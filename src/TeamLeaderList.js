@@ -1,29 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { doc, updateDoc, collection, addDoc, getDocs, getDoc, writeBatch } from "firebase/firestore";
-import { db } from "../firebase";
+import { db } from "./firebase";
 import { Table } from "react-bootstrap";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "./contexts/AuthContext";
 
-const UnitHeadList = ({ unitHeads, onFilterTasks, onUnitHeadClick, onUnitHeadBoxClick }) => {
+const TeamLeaderList = ({ teamLeaders, onFilterTasks, onTeamLeaderClick, onTeamLeaderBoxClick }) => {
   const [taskStatistics, setTaskStatistics] = useState([]);
   const [activeFilter, setActiveFilter] = useState({});
   const [filteredTasks, setFilteredTasks] = useState([]);
-  const [selectedUnitHeadId, setSelectedUnitHeadId] = useState(null);
-  const [selectedUnitHeadTasks, setSelectedUnitHeadTasks] = useState([]);
+  const [selectedTeamLeaderId, setSelectedTeamLeaderId] = useState(null);
+  const [selectedTeamLeaderTasks, setSelectedTeamLeaderTasks] = useState([]);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [tasks, setTasks] = useState([]);
   const { currentUser, logout } = useAuth();
 
   useEffect(() => {
-    const fetchTaskStatistics = async (unitHeadId) => {
+    const fetchTaskStatistics = async (teamLeaderId) => {
       try {
-        const UnitHeadDocRef = doc(db, "unitheads", unitHeadId);
-        const UnitHeadDocSnapshot = await getDoc(UnitHeadDocRef);
+        const TeamLeaderDocRef = doc(db, "teamleaders", teamLeaderId);
+        const TeamLeaderDocSnapshot = await getDoc(TeamLeaderDocRef);
 
-        if (UnitHeadDocSnapshot.exists()) {
-          const UnitHeadData = UnitHeadDocSnapshot.data();
-          const tasksArray = UnitHeadData.tasks || [];
+        if (TeamLeaderDocSnapshot.exists()) {
+          const TeamLeaderData = TeamLeaderDocSnapshot.data();
+          const tasksArray = TeamLeaderData.tasks || [];
 
           const numTasksCompleted = tasksArray.filter(
             (task) => task.status === "completed"
@@ -35,36 +35,36 @@ const UnitHeadList = ({ unitHeads, onFilterTasks, onUnitHeadClick, onUnitHeadBox
             (task) => task.status === "Work in Progress"
           ).length;
 
-          const unitHeadStatistics = {
-            unitHeadId,
+          const teamLeaderStatistics = {
+            teamLeaderId,
             numTasksCompleted,
             numTasksPending,
             numTasksAssigned: tasksArray.length,
             numTasksInProgress,
           };
 
-          setTaskStatistics((prevStatistics) => [...prevStatistics, unitHeadStatistics]);
+          setTaskStatistics((prevStatistics) => [...prevStatistics, teamLeaderStatistics]);
         } else {
-          console.error("Unit Head document does not exist");
+          console.error("Team Leader document does not exist");
         }
       } catch (err) {
         console.error("Error fetching task statistics:", err);
       }
     };
 
-    unitHeads.forEach((unitHead) => {
-      fetchTaskStatistics(unitHead.uid);
+    teamLeaders.forEach((teamLeader) => {
+      fetchTaskStatistics(teamLeader.uid);
     });
-  }, [unitHeads]);
+  }, [teamLeaders]);
 
-  const filterTasks = async (unitHeadId, status) => {
+  const filterTasks = async (teamLeaderId, status) => {
     setActiveFilter(status);
-    setSelectedUnitHeadId(unitHeadId);
+    setSelectedTeamLeaderId(teamLeaderId);
 
-    const selectedUnitHead = unitHeads.find((unitHead) => unitHead.uid === unitHeadId);
+    const selectedTeamLeader = teamLeaders.find((teamLeader) => teamLeader.uid === teamLeaderId);
 
-    if (selectedUnitHead && selectedUnitHead.tasks) {
-      const tasksArray = selectedUnitHead.tasks || [];
+    if (selectedTeamLeader && selectedTeamLeader.tasks) {
+      const tasksArray = selectedTeamLeader.tasks || [];
 
       const sortedTasks = tasksArray.sort((taskA, taskB) => {
         // Assign numerical values to priorities (high: 3, medium: 2, low: 1)
@@ -79,19 +79,19 @@ const UnitHeadList = ({ unitHeads, onFilterTasks, onUnitHeadClick, onUnitHeadBox
 
       onFilterTasks(filteredTasks);
 
-      // Set the selected unit head's tasks
-      setSelectedUnitHeadTasks(filteredTasks);
+      // Set the selected team leader's tasks
+      setSelectedTeamLeaderTasks(filteredTasks);
     }
   };
 
-  const filterAssignedTasks = async (unitHeadId) => {
+  const filterAssignedTasks = async (teamLeaderId) => {
     setActiveFilter("assigned");
-    setSelectedUnitHeadId(unitHeadId);
+    setSelectedTeamLeaderId(teamLeaderId);
 
-    const selectedUnitHead = unitHeads.find((unitHead) => unitHead.uid === unitHeadId);
+    const selectedTeamLeader = teamLeaders.find((teamLeader) => teamLeader.uid === teamLeaderId);
 
-    if (selectedUnitHead && selectedUnitHead.tasks) {
-      const tasksArray = selectedUnitHead.tasks || [];
+    if (selectedTeamLeader && selectedTeamLeader.tasks) {
+      const tasksArray = selectedTeamLeader.tasks || [];
 
       const sortedTasks = tasksArray.sort((taskA, taskB) => {
         // Assign numerical values to priorities (high: 3, medium: 2, low: 1)
@@ -105,16 +105,24 @@ const UnitHeadList = ({ unitHeads, onFilterTasks, onUnitHeadClick, onUnitHeadBox
 
       onFilterTasks(tasksArray);
 
-      // Set the selected unit head's tasks
-      setSelectedUnitHeadTasks(tasksArray);
+      // Set the selected team leader's tasks
+      setSelectedTeamLeaderTasks(tasksArray);
     }
   };
 
   const clearFilter = () => {
     setActiveFilter(null);
-    setSelectedUnitHeadId(null);
+    setSelectedTeamLeaderId(null);
     onFilterTasks([]);
-    setSelectedUnitHeadTasks([]);
+    setSelectedTeamLeaderTasks([]);
+  };
+
+  const handleTeamLeaderClick = (teamLeaderId) => {
+    const selectedTeamLeader = teamLeaders.find((teamLeader) => teamLeader.uid === teamLeaderId);
+
+    if (selectedTeamLeader) {
+      setSelectedTeamLeaderTasks(selectedTeamLeader.tasks || []);
+    }
   };
 
   const handleDeleteTask = async (taskId) => {
@@ -126,8 +134,8 @@ const UnitHeadList = ({ unitHeads, onFilterTasks, onUnitHeadClick, onUnitHeadBox
       setTasks(updatedTasks);
 
       // Update the tasks in Firestore
-      const unitHeadDocRef = doc(db, "unitHeads", currentUser.uid);
-      await updateDoc(unitHeadDocRef, {
+      const teamLeaderDocRef = doc(db, "teamLeaders", currentUser.uid);
+      await updateDoc(teamLeaderDocRef, {
         tasks: updatedTasks,
       });
 
@@ -147,16 +155,16 @@ const UnitHeadList = ({ unitHeads, onFilterTasks, onUnitHeadClick, onUnitHeadBox
 
   return (
     <div>
-      <h2>Unit Head List</h2>
-      {unitHeads && unitHeads.length > 0 ? (
-        unitHeads.map((unitHead) => {
-          const unitHeadStatistics = taskStatistics.find(
-            (stats) => stats.unitHeadId === unitHead.uid
+      <h2>Team Leader List</h2>
+      {teamLeaders && teamLeaders.length > 0 ? (
+        teamLeaders.map((teamLeader) => {
+          const teamLeaderStatistics = taskStatistics.find(
+            (stats) => stats.teamLeaderId === teamLeader.uid
           );
 
           return (
             <div
-              key={unitHead.uid}
+              key={teamLeader.uid}
               style={{
                 border: "1px solid #ccc",
                 padding: "10px",
@@ -166,10 +174,10 @@ const UnitHeadList = ({ unitHeads, onFilterTasks, onUnitHeadClick, onUnitHeadBox
                 alignItems: "flex-start",
               }}
               className="bigbox"
-              onClick={(event) => { console.log("Unit Head box clicked with ID:", unitHead.uid); onUnitHeadClick(unitHead.uid, event) }}
+              onClick={(event) =>{console.log("Team Leader box clicked with ID:", teamLeader.uid); onTeamLeaderBoxClick(teamLeader.uid, event)}}
             >
-              <p>Name: {unitHead.name}</p>
-              <p>Email: {unitHead.email}</p>
+              <p>Name: {teamLeader.name}</p>
+              <p>Email: {teamLeader.email}</p>
               <div
                 style={{
                   display: "flex",
@@ -185,22 +193,22 @@ const UnitHeadList = ({ unitHeads, onFilterTasks, onUnitHeadClick, onUnitHeadBox
                     marginRight: "5px",
                     cursor: "pointer",
                     backgroundColor:
-                      selectedUnitHeadId === unitHead.uid && activeFilter === "assigned"
+                      selectedTeamLeaderId === teamLeader.uid && activeFilter === "assigned"
                         ? "lightblue"
                         : "white",
                   }}
                   onClick={() => {
-                    if (selectedUnitHeadId === unitHead.uid && activeFilter === "assigned") {
+                    if (selectedTeamLeaderId === teamLeader.uid && activeFilter === "assigned") {
                       // Clear the filter if the same box is clicked again
                       clearFilter();
                     } else {
-                      // Set the filter for the new unit head
-                      filterAssignedTasks(unitHead.uid);
+                      // Set the filter for the new team leader
+                      filterAssignedTasks(teamLeader.uid);
                     }
                   }}
                 >
                   <p>No. of Tasks Assigned:</p>
-                  <p>{unitHeadStatistics?.numTasksAssigned}</p>
+                  <p>{teamLeaderStatistics?.numTasksAssigned}</p>
                 </div>
                 <div
                   style={{
@@ -209,76 +217,76 @@ const UnitHeadList = ({ unitHeads, onFilterTasks, onUnitHeadClick, onUnitHeadBox
                     marginRight: "5px",
                     cursor: "pointer",
                     backgroundColor:
-                      selectedUnitHeadId === unitHead.uid && activeFilter === "pending"
+                      selectedTeamLeaderId === teamLeader.uid && activeFilter === "pending"
                         ? "lightblue"
                         : "white",
                   }}
                   onClick={() => {
-                    if (selectedUnitHeadId === unitHead.uid && activeFilter === "pending") {
+                    if (selectedTeamLeaderId === teamLeader.uid && activeFilter === "pending") {
                       // Clear the filter if the same box is clicked again
                       clearFilter();
                     } else {
-                      // Set the filter for the new unit head
-                      filterTasks(unitHead.uid, "pending");
+                      // Set the filter for the new team leader
+                      filterTasks(teamLeader.uid, "pending");
                     }
                   }}
                 >
                   <p>No. of Tasks Pending:</p>
-                  <p>{unitHeadStatistics?.numTasksPending}</p>
+                  <p>{teamLeaderStatistics?.numTasksPending}</p>
                 </div>
+
+                <div
+                style={{
+                  border: "1px solid #ccc",
+                  padding: "5px",
+                  marginRight: "5px",
+                  cursor: "pointer",
+                  backgroundColor:
+                    selectedTeamLeaderId === teamLeader.uid && activeFilter === "Work in Progress"
+                      ? "lightblue"
+                      : "white",
+                }}
+                onClick={() => {
+                  if (selectedTeamLeaderId === teamLeader.uid && activeFilter === "Work in Progress") {
+                    // Clear the filter if the same box is clicked again
+                    clearFilter();
+                  } else {
+                    // Set the filter for the new Team Leader
+                    filterTasks(teamLeader.uid, "Work in Progress"); // Change the status to match your data
+                  }
+                }}
+              >
+                <p>No. of Tasks in Progress:</p>
+                <p>{teamLeaderStatistics?.numTasksInProgress}</p>
+              </div>
 
                 <div
                   style={{
                     border: "1px solid #ccc",
                     padding: "5px",
-                    marginRight: "5px",
                     cursor: "pointer",
                     backgroundColor:
-                      selectedUnitHeadId === unitHead.uid && activeFilter === "Work in Progress"
+                      selectedTeamLeaderId === teamLeader.uid && activeFilter === "completed"
                         ? "lightblue"
                         : "white",
                   }}
                   onClick={() => {
-                    if (selectedUnitHeadId === unitHead.uid && activeFilter === "Work in Progress") {
+                    if (selectedTeamLeaderId === teamLeader.uid && activeFilter === "completed") {
                       // Clear the filter if the same box is clicked again
                       clearFilter();
                     } else {
-                      // Set the filter for the new unit head
-                      filterTasks(unitHead.uid, "Work in Progress"); // Change the status to match your data
-                    }
-                  }}
-                >
-                  <p>No. of Tasks in Progress:</p>
-                  <p>{unitHeadStatistics?.numTasksInProgress}</p>
-                </div>
-
-                <div
-                  style={{
-                    border: "1px solid #ccc",
-                    padding: "5px",
-                    cursor: "pointer",
-                    backgroundColor:
-                      selectedUnitHeadId === unitHead.uid && activeFilter === "completed"
-                        ? "lightblue"
-                        : "white",
-                  }}
-                  onClick={() => {
-                    if (selectedUnitHeadId === unitHead.uid && activeFilter === "completed") {
-                      // Clear the filter if the same box is clicked again
-                      clearFilter();
-                    } else {
-                      // Set the filter for the new unit head
-                      filterTasks(unitHead.uid, "completed");
+                      // Set the filter for the new team leader
+                      filterTasks(teamLeader.uid, "completed");
                     }
                   }}
                 >
                   <p>No. of Tasks Completed:</p>
-                  <p>{unitHeadStatistics?.numTasksCompleted}</p>
+                  <p>{teamLeaderStatistics?.numTasksCompleted}</p>
                 </div>
               </div>
-              {selectedUnitHeadId === unitHead.uid && (
+              {selectedTeamLeaderId === teamLeader.uid && (
                 <div>
-                  {selectedUnitHeadTasks.length > 0 ? (
+                  {selectedTeamLeaderTasks.length > 0 ? (
                     <div>
                       <h2>Tasks</h2>
                       <Table striped bordered hover>
@@ -295,7 +303,7 @@ const UnitHeadList = ({ unitHeads, onFilterTasks, onUnitHeadClick, onUnitHeadBox
                           </tr>
                         </thead>
                         <tbody>
-                          {selectedUnitHeadTasks.map((task) => (
+                          {selectedTeamLeaderTasks.map((task) => (
                             <tr key={task.id}>
                               <td>{task.project}</td>
                               <td>{task.task}</td>
@@ -321,7 +329,7 @@ const UnitHeadList = ({ unitHeads, onFilterTasks, onUnitHeadClick, onUnitHeadBox
                       </Table>
                     </div>
                   ) : (
-                    <p>No tasks available for the selected unit head.</p>
+                    <p>No tasks available for the selected team leader.</p>
                   )}
                 </div>
               )}
@@ -329,10 +337,10 @@ const UnitHeadList = ({ unitHeads, onFilterTasks, onUnitHeadClick, onUnitHeadBox
           );
         })
       ) : (
-        <p>No unit heads available</p>
+        <p>No team leaders available</p>
       )}
     </div>
   );
 };
 
-export default UnitHeadList;
+export default TeamLeaderList;

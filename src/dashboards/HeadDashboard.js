@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Card, Button, Alert, Table, Form, Modal } from "react-bootstrap";
 import { useAuth } from "../contexts/AuthContext";
-import TeamLeaderList from "./TeamLeaderList"; 
+import TeamLeaderList from "../TeamLeaderList"; 
 import { doc, updateDoc, collection, addDoc, getDocs, getDoc, writeBatch, query, where } from "firebase/firestore";
 import { db } from "../firebase";
 import { v4 as uuidv4 } from "uuid";
-import SupervisorList from "./SupervisorList"; 
-import EmployeeList from "./EmployeeList";
-import UnitHeadList from "./UnitHeadList";
-import TaskRow from "./TaskRow";
+import SupervisorList from "../SupervisorList"; 
+import EmployeeList from "../EmployeeList";
+import UnitHeadList from "../UnitHeadList";
+import TaskRow from "../TaskRow";
 
 export default function HeadDashboard() {
   const [selectedTeamLeaderId, setSelectedTeamLeaderId] = useState(null);

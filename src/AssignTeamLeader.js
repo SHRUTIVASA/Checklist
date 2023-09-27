@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Form, Button } from "react-bootstrap";
 import { getDocs, collection } from "firebase/firestore"; // Import Firestore functions
-import { db } from "../firebase";
+import { db } from "./firebase";
 
 export default function AssignTeamLeader({ teamLeaders, onAssignTeamLeader }) {
   const [selectedUnitHead, setSelectedUnitHead] = useState("");

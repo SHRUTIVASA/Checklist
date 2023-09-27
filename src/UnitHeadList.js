@@ -1,29 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { doc, updateDoc, collection, addDoc, getDocs, getDoc, writeBatch } from "firebase/firestore";
-import { db } from "../firebase";
+import { db } from "./firebase";
 import { Table } from "react-bootstrap";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "./contexts/AuthContext";
 
-const SupervisorList = ({ supervisors, onFilterTasks, onSupervisorClick,  onSupervisorBoxClick }) => {
+const UnitHeadList = ({ unitHeads, onFilterTasks, onUnitHeadClick, onUnitHeadBoxClick }) => {
   const [taskStatistics, setTaskStatistics] = useState([]);
   const [activeFilter, setActiveFilter] = useState({});
   const [filteredTasks, setFilteredTasks] = useState([]);
-  const [selectedSupervisorId, setSelectedSupervisorId] = useState(null);
-  const [selectedSupervisorTasks, setSelectedSupervisorTasks] = useState([]);
+  const [selectedUnitHeadId, setSelectedUnitHeadId] = useState(null);
+  const [selectedUnitHeadTasks, setSelectedUnitHeadTasks] = useState([]);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [tasks, setTasks] = useState([]);
   const { currentUser, logout } = useAuth();
 
   useEffect(() => {
-    const fetchTaskStatistics = async (supervisorId) => {
+    const fetchTaskStatistics = async (unitHeadId) => {
       try {
-        const SupervisorDocRef = doc(db, "supervisors", supervisorId);
-        const SupervisorDocSnapshot = await getDoc(SupervisorDocRef);
+        const UnitHeadDocRef = doc(db, "unitheads", unitHeadId);
+        const UnitHeadDocSnapshot = await getDoc(UnitHeadDocRef);
 
-        if (SupervisorDocSnapshot.exists()) {
-          const SupervisorData = SupervisorDocSnapshot.data();
-          const tasksArray = SupervisorData.tasks || [];
+        if (UnitHeadDocSnapshot.exists()) {
+          const UnitHeadData = UnitHeadDocSnapshot.data();
+          const tasksArray = UnitHeadData.tasks || [];
 
           const numTasksCompleted = tasksArray.filter(
             (task) => task.status === "completed"
@@ -35,36 +35,36 @@ const SupervisorList = ({ supervisors, onFilterTasks, onSupervisorClick,  onSupe
             (task) => task.status === "Work in Progress"
           ).length;
 
-          const supervisorStatistics = {
-            supervisorId,
+          const unitHeadStatistics = {
+            unitHeadId,
             numTasksCompleted,
             numTasksPending,
             numTasksAssigned: tasksArray.length,
             numTasksInProgress,
           };
 
-          setTaskStatistics((prevStatistics) => [...prevStatistics, supervisorStatistics]);
+          setTaskStatistics((prevStatistics) => [...prevStatistics, unitHeadStatistics]);
         } else {
-          console.error("Supervisor document does not exist");
+          console.error("Unit Head document does not exist");
         }
       } catch (err) {
         console.error("Error fetching task statistics:", err);
       }
     };
 
-    supervisors.forEach((supervisor) => {
-      fetchTaskStatistics(supervisor.uid);
+    unitHeads.forEach((unitHead) => {
+      fetchTaskStatistics(unitHead.uid);
     });
-  }, [supervisors]);
+  }, [unitHeads]);
 
-  const filterTasks = async (supervisorId, status) => {
+  const filterTasks = async (unitHeadId, status) => {
     setActiveFilter(status);
-    setSelectedSupervisorId(supervisorId);
+    setSelectedUnitHeadId(unitHeadId);
 
-    const selectedSupervisor = supervisors.find((supervisor) => supervisor.uid === supervisorId);
+    const selectedUnitHead = unitHeads.find((unitHead) => unitHead.uid === unitHeadId);
 
-    if (selectedSupervisor && selectedSupervisor.tasks) {
-      const tasksArray = selectedSupervisor.tasks || [];
+    if (selectedUnitHead && selectedUnitHead.tasks) {
+      const tasksArray = selectedUnitHead.tasks || [];
 
       const sortedTasks = tasksArray.sort((taskA, taskB) => {
         // Assign numerical values to priorities (high: 3, medium: 2, low: 1)
@@ -79,19 +79,19 @@ const SupervisorList = ({ supervisors, onFilterTasks, onSupervisorClick,  onSupe
 
       onFilterTasks(filteredTasks);
 
-      // Set the selected supervisor's tasks
-      setSelectedSupervisorTasks(filteredTasks);
+      // Set the selected unit head's tasks
+      setSelectedUnitHeadTasks(filteredTasks);
     }
   };
 
-  const filterAssignedTasks = async (supervisorId) => {
+  const filterAssignedTasks = async (unitHeadId) => {
     setActiveFilter("assigned");
-    setSelectedSupervisorId(supervisorId);
+    setSelectedUnitHeadId(unitHeadId);
 
-    const selectedSupervisor = supervisors.find((supervisor) => supervisor.uid === supervisorId);
+    const selectedUnitHead = unitHeads.find((unitHead) => unitHead.uid === unitHeadId);
 
-    if (selectedSupervisor && selectedSupervisor.tasks) {
-      const tasksArray = selectedSupervisor.tasks || [];
+    if (selectedUnitHead && selectedUnitHead.tasks) {
+      const tasksArray = selectedUnitHead.tasks || [];
 
       const sortedTasks = tasksArray.sort((taskA, taskB) => {
         // Assign numerical values to priorities (high: 3, medium: 2, low: 1)
@@ -105,16 +105,16 @@ const SupervisorList = ({ supervisors, onFilterTasks, onSupervisorClick,  onSupe
 
       onFilterTasks(tasksArray);
 
-      // Set the selected supervisor's tasks
-      setSelectedSupervisorTasks(tasksArray);
+      // Set the selected unit head's tasks
+      setSelectedUnitHeadTasks(tasksArray);
     }
   };
 
   const clearFilter = () => {
     setActiveFilter(null);
-    setSelectedSupervisorId(null);
+    setSelectedUnitHeadId(null);
     onFilterTasks([]);
-    setSelectedSupervisorTasks([]);
+    setSelectedUnitHeadTasks([]);
   };
 
   const handleDeleteTask = async (taskId) => {
@@ -126,8 +126,8 @@ const SupervisorList = ({ supervisors, onFilterTasks, onSupervisorClick,  onSupe
       setTasks(updatedTasks);
 
       // Update the tasks in Firestore
-      const supervisorDocRef = doc(db, "supervisors", currentUser.uid);
-      await updateDoc(supervisorDocRef, {
+      const unitHeadDocRef = doc(db, "unitHeads", currentUser.uid);
+      await updateDoc(unitHeadDocRef, {
         tasks: updatedTasks,
       });
 
@@ -147,16 +147,16 @@ const SupervisorList = ({ supervisors, onFilterTasks, onSupervisorClick,  onSupe
 
   return (
     <div>
-      <h2>Supervisor List</h2>
-      {supervisors && supervisors.length > 0 ? (
-        supervisors.map((supervisor) => {
-          const supervisorStatistics = taskStatistics.find(
-            (stats) => stats.supervisorId === supervisor.uid
+      <h2>Unit Head List</h2>
+      {unitHeads && unitHeads.length > 0 ? (
+        unitHeads.map((unitHead) => {
+          const unitHeadStatistics = taskStatistics.find(
+            (stats) => stats.unitHeadId === unitHead.uid
           );
 
           return (
             <div
-              key={supervisor.uid}
+              key={unitHead.uid}
               style={{
                 border: "1px solid #ccc",
                 padding: "10px",
@@ -166,10 +166,10 @@ const SupervisorList = ({ supervisors, onFilterTasks, onSupervisorClick,  onSupe
                 alignItems: "flex-start",
               }}
               className="bigbox"
-              onClick={(event) =>{console.log("Supervisor box clicked with ID:", supervisor.uid); onSupervisorBoxClick(supervisor.uid, event)}}
+              onClick={(event) => { console.log("Unit Head box clicked with ID:", unitHead.uid); onUnitHeadClick(unitHead.uid, event) }}
             >
-              <p>Name: {supervisor.name}</p>
-              <p>Email: {supervisor.email}</p>
+              <p>Name: {unitHead.name}</p>
+              <p>Email: {unitHead.email}</p>
               <div
                 style={{
                   display: "flex",
@@ -185,22 +185,22 @@ const SupervisorList = ({ supervisors, onFilterTasks, onSupervisorClick,  onSupe
                     marginRight: "5px",
                     cursor: "pointer",
                     backgroundColor:
-                      selectedSupervisorId === supervisor.uid && activeFilter === "assigned"
+                      selectedUnitHeadId === unitHead.uid && activeFilter === "assigned"
                         ? "lightblue"
                         : "white",
                   }}
                   onClick={() => {
-                    if (selectedSupervisorId === supervisor.uid && activeFilter === "assigned") {
+                    if (selectedUnitHeadId === unitHead.uid && activeFilter === "assigned") {
                       // Clear the filter if the same box is clicked again
                       clearFilter();
                     } else {
-                      // Set the filter for the new supervisor
-                      filterAssignedTasks(supervisor.uid);
+                      // Set the filter for the new unit head
+                      filterAssignedTasks(unitHead.uid);
                     }
                   }}
                 >
                   <p>No. of Tasks Assigned:</p>
-                  <p>{supervisorStatistics?.numTasksAssigned}</p>
+                  <p>{unitHeadStatistics?.numTasksAssigned}</p>
                 </div>
                 <div
                   style={{
@@ -209,48 +209,48 @@ const SupervisorList = ({ supervisors, onFilterTasks, onSupervisorClick,  onSupe
                     marginRight: "5px",
                     cursor: "pointer",
                     backgroundColor:
-                      selectedSupervisorId === supervisor.uid && activeFilter === "pending"
+                      selectedUnitHeadId === unitHead.uid && activeFilter === "pending"
                         ? "lightblue"
                         : "white",
                   }}
                   onClick={() => {
-                    if (selectedSupervisorId === supervisor.uid && activeFilter === "pending") {
+                    if (selectedUnitHeadId === unitHead.uid && activeFilter === "pending") {
                       // Clear the filter if the same box is clicked again
                       clearFilter();
                     } else {
-                      // Set the filter for the new supervisor
-                      filterTasks(supervisor.uid, "pending");
+                      // Set the filter for the new unit head
+                      filterTasks(unitHead.uid, "pending");
                     }
                   }}
                 >
                   <p>No. of Tasks Pending:</p>
-                  <p>{supervisorStatistics?.numTasksPending}</p>
+                  <p>{unitHeadStatistics?.numTasksPending}</p>
                 </div>
 
                 <div
-                style={{
-                  border: "1px solid #ccc",
-                  padding: "5px",
-                  marginRight: "5px",
-                  cursor: "pointer",
-                  backgroundColor:
-                    selectedSupervisorId === supervisor.uid && activeFilter === "Work in Progress"
-                      ? "lightblue"
-                      : "white",
-                }}
-                onClick={() => {
-                  if (selectedSupervisorId === supervisor.uid && activeFilter === "Work in Progress") {
-                    // Clear the filter if the same box is clicked again
-                    clearFilter();
-                  } else {
-                    // Set the filter for the new Supervisor
-                    filterTasks(supervisor.uid, "Work in Progress"); // Change the status to match your data
-                  }
-                }}
-              >
-                <p>No. of Tasks in Progress:</p>
-                <p>{supervisorStatistics?.numTasksInProgress}</p>
-              </div>
+                  style={{
+                    border: "1px solid #ccc",
+                    padding: "5px",
+                    marginRight: "5px",
+                    cursor: "pointer",
+                    backgroundColor:
+                      selectedUnitHeadId === unitHead.uid && activeFilter === "Work in Progress"
+                        ? "lightblue"
+                        : "white",
+                  }}
+                  onClick={() => {
+                    if (selectedUnitHeadId === unitHead.uid && activeFilter === "Work in Progress") {
+                      // Clear the filter if the same box is clicked again
+                      clearFilter();
+                    } else {
+                      // Set the filter for the new unit head
+                      filterTasks(unitHead.uid, "Work in Progress"); // Change the status to match your data
+                    }
+                  }}
+                >
+                  <p>No. of Tasks in Progress:</p>
+                  <p>{unitHeadStatistics?.numTasksInProgress}</p>
+                </div>
 
                 <div
                   style={{
@@ -258,27 +258,27 @@ const SupervisorList = ({ supervisors, onFilterTasks, onSupervisorClick,  onSupe
                     padding: "5px",
                     cursor: "pointer",
                     backgroundColor:
-                      selectedSupervisorId === supervisor.uid && activeFilter === "completed"
+                      selectedUnitHeadId === unitHead.uid && activeFilter === "completed"
                         ? "lightblue"
                         : "white",
                   }}
                   onClick={() => {
-                    if (selectedSupervisorId === supervisor.uid && activeFilter === "completed") {
+                    if (selectedUnitHeadId === unitHead.uid && activeFilter === "completed") {
                       // Clear the filter if the same box is clicked again
                       clearFilter();
                     } else {
-                      // Set the filter for the new supervisor
-                      filterTasks(supervisor.uid, "completed");
+                      // Set the filter for the new unit head
+                      filterTasks(unitHead.uid, "completed");
                     }
                   }}
                 >
                   <p>No. of Tasks Completed:</p>
-                  <p>{supervisorStatistics?.numTasksCompleted}</p>
+                  <p>{unitHeadStatistics?.numTasksCompleted}</p>
                 </div>
               </div>
-              {selectedSupervisorId === supervisor.uid && (
+              {selectedUnitHeadId === unitHead.uid && (
                 <div>
-                  {selectedSupervisorTasks.length > 0 ? (
+                  {selectedUnitHeadTasks.length > 0 ? (
                     <div>
                       <h2>Tasks</h2>
                       <Table striped bordered hover>
@@ -295,7 +295,7 @@ const SupervisorList = ({ supervisors, onFilterTasks, onSupervisorClick,  onSupe
                           </tr>
                         </thead>
                         <tbody>
-                          {selectedSupervisorTasks.map((task) => (
+                          {selectedUnitHeadTasks.map((task) => (
                             <tr key={task.id}>
                               <td>{task.project}</td>
                               <td>{task.task}</td>
@@ -321,7 +321,7 @@ const SupervisorList = ({ supervisors, onFilterTasks, onSupervisorClick,  onSupe
                       </Table>
                     </div>
                   ) : (
-                    <p>No tasks available for the selected supervisor.</p>
+                    <p>No tasks available for the selected unit head.</p>
                   )}
                 </div>
               )}
@@ -329,10 +329,10 @@ const SupervisorList = ({ supervisors, onFilterTasks, onSupervisorClick,  onSupe
           );
         })
       ) : (
-        <p>No supervisors available</p>
+        <p>No unit heads available</p>
       )}
     </div>
   );
 };
 
-export default SupervisorList;
+export default UnitHeadList;

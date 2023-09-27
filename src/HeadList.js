@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { doc, updateDoc, collection, addDoc, getDocs, getDoc, writeBatch } from "firebase/firestore";
-import { db } from "../firebase";
+import { db } from "./firebase";
 import { Table } from "react-bootstrap";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "./contexts/AuthContext";
 
 const HeadList = ({ heads, onFilterTasks, onHeadClick, onHeadBoxClick }) => {
   const [taskStatistics, setTaskStatistics] = useState([]);
