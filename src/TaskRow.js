@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function TaskRow({ task, onDeleteTask, onMarkAsCompleted, onChangeStatus }) {
+function TaskRow({ task, onDeleteTask, onMarkAsCompleted, onChangeStatus, style }) {
   // Initialize the status state for each task with its taskId
   const [status, setStatus] = useState(task.status);
   const [deleteTaskLoading, setDeleteTaskLoading] = useState(false);
@@ -28,7 +28,7 @@ function TaskRow({ task, onDeleteTask, onMarkAsCompleted, onChangeStatus }) {
   };
 
   return (
-    <tr key={task.taskId}>
+    <tr style={style} key={task.taskId}>
       <td>{task.project}</td>
       <td>{task.task}</td>
       <td>{task.subtask}</td>
