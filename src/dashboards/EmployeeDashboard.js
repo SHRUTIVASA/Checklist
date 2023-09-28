@@ -222,16 +222,15 @@ export default function EmployeeDashboard() {
       <Row>
         {/* Side Navigation */}
         <Col sm={2} className="bg-primary text-white p-0">
-          <Navbar expand="lg" variant="dark" className="flex-column vh-100">
+          <Navbar expand="lg" variant="dark" className="flex-column vh-100" style={{ backgroundColor: '#001D44'}}>
             <Navbar.Brand>
-              {/* <img
-                src="https://www.adobe.com/content/dam/cc/us/en/creativecloud/design/discover/mascot-logo-design/mascot-logo-design_fb-img_1200x800.jpg"
-                width="300"
-                height="200"
+              <img
+                src={process.env.PUBLIC_URL + '/Logo.jpeg'}
+                width="150"
+                height="150"
                 className="d-inline-block align-top"
-                alt="Company Logo"
-              /> */}
-              <h4>Company Logo</h4>
+              />
+              <h4>Checklist App</h4>
             </Navbar.Brand>
             <Nav className="flex-column d-flex justify-content-center flex-grow-1">
               <Nav.Link active href="#">User Profile</Nav.Link>
