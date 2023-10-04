@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button, Alert, Table, Form, Modal } from "react-bootstrap";
+import { Card, Button, Alert, Table, Form, Modal, Container, Row, Col, Navbar, Nav } from "react-bootstrap";
 import { useAuth } from "../contexts/AuthContext";
 import TeamLeaderList from "../TeamLeaderList"; 
 import { doc, updateDoc, collection, addDoc, getDocs, getDoc, writeBatch, query, where } from "firebase/firestore";
@@ -9,12 +9,14 @@ import SupervisorList from "../SupervisorList";
 import EmployeeList from "../EmployeeList";
 import UnitHeadList from "../UnitHeadList";
 import TaskRow from "../TaskRow";
+import '../styles/EmployeeDashboard.css';
 
 export default function HeadDashboard() {
   const [selectedTeamLeaderId, setSelectedTeamLeaderId] = useState(null);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const { currentUser, logout } = useAuth();
+  const [userData, setUserData] = useState(null);
   const [teamLeaders, setTeamLeaders] = useState([]);
   const [selectedTeamLeaderTasks, setSelectedTeamLeaderTasks] = useState([]);
   const [tasks, setTasks] = useState([]);
@@ -95,6 +97,27 @@ export default function HeadDashboard() {
         console.error("Fetch tasks error", err);
       }
     };
+
+    useEffect(() => {
+      const fetchUserData = async () => {
+        try {
+          const docRef = doc(db, "heads", currentUser.uid);
+          const docSnapshot = await getDoc(docRef);
+
+          if (docSnapshot.exists()) {
+            const docData = docSnapshot.data();
+            setUserData(docData);
+          }
+        } catch (err) {
+          setError("Failed to fetch user data");
+          console.error("Fetch user data error", err);
+        }
+      }
+
+      if (currentUser) {
+        fetchUserData();
+      }
+    }, [currentUser]);
   
     useEffect(() => {
       if (currentUser) {
@@ -580,10 +603,29 @@ const toggleEmployeeList = () => {
   };  
 
   return (
-    <div>
+    <Container fluid>
+      <Row>
+      <Col sm={2} className="bg-primary text-white p-0">
+          <Navbar expand="lg" variant="dark" className="flex-column h-100" style={{ backgroundColor: '#001D44'}}>
+            <Navbar.Brand>
+              <img
+                src={process.env.PUBLIC_URL + '/Logo.jpeg'}
+                width="150"
+                height="150"
+                className="d-inline-block align-top"
+              />
+              <h4>Checklist App</h4>
+            </Navbar.Brand>
+            <Nav className="flex-column d-flex justify-content-center flex-grow-1">
+              <Nav.Link active href="#">User Profile</Nav.Link>
+              <Nav.Link active href="#">Change Password</Nav.Link>
+            </Nav>
+          </Navbar>
+      </Col>
+    <Col sm={10}>
       <Card>
         <Card.Body>
-          <h2 className="text-center mb-4">Welcome, {currentUser.displayName}</h2>
+          <h2 className="text-center mb-4">Welcome, {userData.name}</h2>
           {error && <Alert variant="danger">{error}</Alert>}
           {successMessage && <Alert variant="success">{successMessage}</Alert>}
 
@@ -718,6 +760,8 @@ const toggleEmployeeList = () => {
         </Button>
       </div>
       </div>
-    </div>
+    </Col>
+    </Row>
+    </Container>
   );
 }

@@ -223,7 +223,7 @@ export default function EmployeeDashboard() {
       <Row>
         {/* Side Navigation */}
         <Col sm={2} className="bg-primary text-white p-0">
-          <Navbar expand="lg" variant="dark" className="flex-column vh-100" style={{ backgroundColor: '#001D44'}}>
+          <Navbar expand="lg" variant="dark" className="flex-column h-100" style={{ backgroundColor: '#001D44'}}>
             <Navbar.Brand>
               <img
                 src={process.env.PUBLIC_URL + '/Logo.jpeg'}
