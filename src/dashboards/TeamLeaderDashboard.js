@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button, Alert, Table, Form, Modal } from "react-bootstrap";
+import { Card, Button, Alert, Table, Form, Modal, Container, Row, Col, Navbar, Nav } from "react-bootstrap";
 import { useAuth } from "../contexts/AuthContext";
 import SupervisorList from "../SupervisorList";
 import {
@@ -21,6 +21,7 @@ export default function TeamLeaderDashboard() {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const { currentUser, logout } = useAuth();
+  const [userData, setUserData] = useState(null);
   const [supervisors, setSupervisors] = useState([]);
   const [selectedSupervisorTasks, setSelectedSupervisorTasks] = useState([]);
   const [tasks, setTasks] = useState([]);
@@ -99,6 +100,27 @@ export default function TeamLeaderDashboard() {
     if (currentUser) {
       fetchTasks();
     }
+  }, [currentUser]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const teamleadersDocRef = doc(db, "teamleaders", currentUser.uid);
+        const teamleadersDocSnapshot = await getDoc(teamleadersDocRef);
+
+        if (teamleadersDocSnapshot.exists()) {
+          const teamleadersData = teamleadersDocSnapshot.data();
+          setUserData(teamleadersData);
+        }
+      }
+
+      catch (err) {
+        setError("Failed to fetch user data: " + err.message);
+        console.error("Fetch user data error", err);
+      }
+    }
+
+    fetchUserData();
   }, [currentUser]);
 
   useEffect(() => {
@@ -527,11 +549,31 @@ export default function TeamLeaderDashboard() {
   };
 
   return (
-    <div>
-      <Card>
-        <Card.Body>
+    <Container fluid>
+      <Row>
+      <Col sm={2} className="bg-primary text-white p-0">
+          <Navbar expand="lg" variant="dark" className="flex-column vh-100" style={{ backgroundColor: '#001D44'}}>
+            <Navbar.Brand>
+              <img
+                src={process.env.PUBLIC_URL + '/Logo.jpeg'}
+                width="150"
+                height="150"
+                className="d-inline-block align-top"
+              />
+              <h4>Checklist App</h4>
+            </Navbar.Brand>
+            <Nav className="flex-column d-flex justify-content-center flex-grow-1">
+              <Nav.Link active href="#">User Profile</Nav.Link>
+              <Nav.Link active href="#">Change Password</Nav.Link>
+            </Nav>
+          </Navbar>
+      </Col>
+      <Col sm={10}>
+        <Container className="border p-4" style={{ marginTop: '80px' }}>
+          <Row>
+            <Col>
           <h2 className="text-center mb-4">
-            Welcome, {currentUser.displayName}
+            Welcome, {userData && userData.name}
           </h2>
           {error && <Alert variant="danger">{error}</Alert>}
           {successMessage && <Alert variant="success">{successMessage}</Alert>}
@@ -571,8 +613,8 @@ export default function TeamLeaderDashboard() {
               </Button>
             </div>
           )}
-        </Card.Body>
-      </Card>
+          </Col>
+          </Row>
       {/* Task Assignment Form Modal */}
       <Modal show={showTaskForm} onHide={() => setShowTaskForm(false)}>
         <Modal.Header closeButton>
@@ -734,7 +776,8 @@ export default function TeamLeaderDashboard() {
           </div>
         </Modal.Body>
       </Modal>
-      <div>
+      <Row className="mt-4">
+        <Col>
         <h4>Task Statistics</h4>
         <div>
           <div>
@@ -788,7 +831,11 @@ export default function TeamLeaderDashboard() {
             Log Out
           </Button>
         </div>
-      </div>
-    </div>
+        </Col>
+      </Row>
+      </Container>
+      </Col>
+      </Row>
+    </Container>
   );
 }
