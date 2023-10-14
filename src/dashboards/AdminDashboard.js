@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button, Alert, Table, Form, Modal } from "react-bootstrap";
+import { Card, Button, Alert, Table, Form, Modal, Container, Row, Col, Navbar, Nav } from "react-bootstrap";
 import { useAuth } from "../contexts/AuthContext";
 import {
   doc,
@@ -25,6 +25,7 @@ import AssignEmployee from "../AssignEmployee";
 import AssignSupervisor from "../AssignSupervisor";
 import AssignTeamLeader from "../AssignTeamLeader";
 import AssignUnitHead from "../AssignUnitHead";
+import '../styles/EmployeeDashboard.css';
 
 
 export default function AdminDashboard() {
@@ -1075,9 +1076,29 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div>
-      <Card>
-        <Card.Body>
+    <Container fluid>
+      <Row>
+      <Col sm={2} className="bg-primary text-white p-0">
+          <Navbar expand="lg" variant="dark" className="flex-column h-100" style={{ backgroundColor: '#001D44'}}>
+            <Navbar.Brand>
+              <img
+                src={process.env.PUBLIC_URL + '/Logo.jpeg'}
+                width="150"
+                height="150"
+                className="d-inline-block align-top"
+              />
+              <h4>Checklist App</h4>
+            </Navbar.Brand>
+            <Nav className="flex-column d-flex justify-content-center flex-grow-1">
+              <Nav.Link active href="#">User Profile</Nav.Link>
+              <Nav.Link active href="#">Change Password</Nav.Link>
+            </Nav>
+          </Navbar>
+      </Col>
+      <Col sm={10}>
+    <Container className="border p-4" style={{ marginTop: '80px' }}>
+          <Row>
+            <Col>
           <h2 className="text-center mb-4">Admin Dashboard</h2>
           {error && <Alert variant="danger">{error}</Alert>}
           {successMessage && <Alert variant="success">{successMessage}</Alert>}
@@ -1186,8 +1207,8 @@ export default function AdminDashboard() {
           >
             Assign Task
           </Button>
-        </Card.Body>
-      </Card>
+        </Col>
+        </Row>
       {/* Task Assignment Form Modal */}
       <Modal show={showTaskForm} onHide={() => setShowTaskForm(false)}>
         <Modal.Header closeButton>
@@ -1520,6 +1541,9 @@ export default function AdminDashboard() {
           Log Out
         </Button>
       </div>
-    </div>
+    </Container>
+    </Col>
+    </Row>
+    </Container>
   );
 }

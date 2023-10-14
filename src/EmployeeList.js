@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { doc, updateDoc, collection, addDoc, getDocs, getDoc, writeBatch } from "firebase/firestore";
 import { db } from "./firebase";
-import { Card, Button, Alert, Table, Form, Modal, Container, Row, Col } from "react-bootstrap";
+import { Card, Table, Container, Row, Col } from "react-bootstrap";
 import { useAuth } from "./contexts/AuthContext";
 import './styles/EmployeeDashboard.css'
 
@@ -177,7 +177,19 @@ const EmployeeList = ({ employees, onFilterTasks, onEmployeeClick}) => {
             //     alignItems: "flex-start",
             //   }}
             // >
-            <Container fluid key={employee.uid} className="employee-card">
+            <Container 
+            fluid 
+            key={employee.uid} 
+            className="employee-card"
+            style={{
+              border: "1px solid #ccc",
+              padding: "10px",
+              marginBottom: "10px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "flex-start",
+            }}
+            >
               <p>Name: {employee.name}</p>
               <p>Email: {employee.email}</p>
               <div className="d-flex justify-content-between w-100">
