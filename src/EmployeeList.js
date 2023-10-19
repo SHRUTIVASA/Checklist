@@ -157,7 +157,7 @@ const EmployeeList = ({ employees, onFilterTasks, onEmployeeClick}) => {
   };
 
   return (
-    <Container fluid className="employee-list">
+    <Container className="employee-list">
       <h2 className="text-center mb-4">Employee List</h2>
       {employees && employees.length > 0 ? (
         employees.map((employee) => {
@@ -184,10 +184,10 @@ const EmployeeList = ({ employees, onFilterTasks, onEmployeeClick}) => {
             style={{
               border: "1px solid #ccc",
               padding: "10px",
-              marginBottom: "10px",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
+              // marginBottom: "10px",
+              // display: "flex",
+              // flexDirection: "column",
+              // alignItems: "flex-start",
             }}
             >
               <p>Name: {employee.name}</p>
@@ -340,13 +340,18 @@ const EmployeeList = ({ employees, onFilterTasks, onEmployeeClick}) => {
                             <td>{task.subtask}</td>
                             <td>{task.members}</td>
                             <td>
-                              {task.status === "completed" ? (
-                                <span>Completed</span>
-                              ) : task.status === "pending" ? (
-                                <span>Pending</span>
-                              ) : (
-                                <span>Work in Progress</span>
-                              )}
+                            {task.status === "completed" ? (
+                                    <span>Completed</span>
+                                  ) : task.status === "Work in Progress" ? (
+                                    <span>Work in Progress</span>
+                                  ) : task.status === "pending" &&
+                                    task.priority === "high" ? (
+                                    <span className="high-priority-pending">
+                                      Pending
+                                    </span>
+                                  ) : (
+                                    <span>Pending</span>
+                                  )}
                             </td>
                             <td>{task.endDate}</td>
                             <td>{task.priority}</td>

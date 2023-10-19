@@ -7,6 +7,8 @@ import { v4 as uuidv4 } from "uuid";
 import EmployeeList from "../EmployeeList";
 import TaskRow from "../TaskRow";
 import '../styles/EmployeeDashboard.css'
+import {AiOutlineLogout, AiOutlineUser} from 'react-icons/ai';
+import {RiLockPasswordFill} from 'react-icons/ri';
 
 export default function SupervisorDashboard() {
   const [error, setError] = useState("");
@@ -403,21 +405,33 @@ export default function SupervisorDashboard() {
     <Container fluid>
       <Row>
       <Col sm={2} className="bg-primary text-white p-0">
-          <Navbar expand="lg" variant="dark" className="flex-column vh-100" style={{ backgroundColor: '#001D44'}}>
-            <Navbar.Brand>
-              <img
-                src={process.env.PUBLIC_URL + '/Logo.jpeg'}
-                width="150"
-                height="150"
-                className="d-inline-block align-top"
-              />
-              <h4>Checklist App</h4>
-            </Navbar.Brand>
-            <Nav className="flex-column d-flex justify-content-center flex-grow-1">
-              <Nav.Link active href="#">User Profile</Nav.Link>
-              <Nav.Link active href="#">Change Password</Nav.Link>
-            </Nav>
-          </Navbar>
+      <Navbar expand="lg" variant="dark" className="flex-column h-100" style={{ backgroundColor: '#001D44' }}>
+  <Navbar.Brand>
+    <img
+      src={process.env.PUBLIC_URL + '/Logo.png'}
+      width="150"
+      height="150"
+      className="d-inline-block align-top"
+    />
+    <h4>Checklist App</h4>
+  </Navbar.Brand>
+  <Row className="w-100 mt-4 flex-grow-1">
+    <Col className="d-flex flex-column align-items-center justify-content-center">
+      <Nav className="flex-column d-flex justify-content-center flex-grow-1">
+        <Nav.Link active href="/supervisor-dashboard" className="mb-3 fs-5 d-flex align-items-center">
+          <AiOutlineUser style={{ marginRight: '10px' }} /> User Profile
+        </Nav.Link>
+        <Nav.Link active href="/supervisor-change-password" className="mb-3 fs-5 d-flex align-items-center">
+          <RiLockPasswordFill style={{ marginRight: '10px' }} /> Change Password
+        </Nav.Link>
+        <Nav.Link active onClick={handleLogout} className="mb-3 fs-5 d-flex align-items-center">
+          <AiOutlineLogout style={{ marginRight: '10px' }} /> Logout
+        </Nav.Link>
+      </Nav>
+    </Col>
+  </Row>
+</Navbar>
+
       </Col>
       <Col sm={10}>
         <Container className="border p-4" style={{ marginTop: "80px" }}>
@@ -678,11 +692,11 @@ export default function SupervisorDashboard() {
                 </Table>
               </Col>
             </Row>
-      <div className="w-100 text-center mt-2">
+      {/* <div className="w-100 text-center mt-2">
       <Button variant="link" onClick={handleLogout}>
         Log Out
       </Button>
-    </div>
+    </div> */}
     </Container>
     </Col>
     </Row>

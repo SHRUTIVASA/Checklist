@@ -16,6 +16,8 @@ import { v4 as uuidv4 } from "uuid";
 import EmployeeList from "../EmployeeList";
 import TaskRow from "../TaskRow";
 import '../styles/EmployeeDashboard.css';
+import { AiOutlineUser, AiOutlineLogout } from 'react-icons/ai';
+import { RiLockPasswordFill } from 'react-icons/ri';
 
 export default function TeamLeaderDashboard() {
   const [selectedSupervisorId, setSelectedSupervisorId] = useState(null);
@@ -553,27 +555,38 @@ export default function TeamLeaderDashboard() {
     <Container fluid>
       <Row>
       <Col sm={2} className="bg-primary text-white p-0">
-          <Navbar expand="lg" variant="dark" className="flex-column h-100" style={{ backgroundColor: '#001D44'}}>
-            <Navbar.Brand>
-              <img
-                src={process.env.PUBLIC_URL + '/Logo.jpeg'}
-                width="150"
-                height="150"
-                className="d-inline-block align-top"
-              />
-              <h4>Checklist App</h4>
-            </Navbar.Brand>
-            <Nav className="flex-column d-flex justify-content-center flex-grow-1">
-              <Nav.Link active href="#">User Profile</Nav.Link>
-              <Nav.Link active href="#">Change Password</Nav.Link>
-            </Nav>
-          </Navbar>
+      <Navbar expand="lg" variant="dark" className="flex-column h-100" style={{ backgroundColor: '#001D44' }}>
+  <Navbar.Brand>
+    <img
+      src={process.env.PUBLIC_URL + '/Logo.png'}
+      width="150"
+      height="150"
+      className="d-inline-block align-top"
+    />
+    <h4>Checklist App</h4>
+  </Navbar.Brand>
+  <Row className="w-100 mt-4 flex-grow-1">
+    <Col className="d-flex flex-column align-items-center justify-content-center">
+      <Nav className="flex-column d-flex justify-content-center flex-grow-1">
+        <Nav.Link active href="/supervisor-dashboard" className="mb-3 fs-5 d-flex align-items-center">
+          <AiOutlineUser style={{ marginRight: '10px' }} /> User Profile
+        </Nav.Link>
+        <Nav.Link active href="/supervisor-change-password" className="mb-3 fs-5 d-flex align-items-center">
+          <RiLockPasswordFill style={{ marginRight: '10px' }} /> Change Password
+        </Nav.Link>
+        <Nav.Link active onClick={handleLogout} className="mb-3 fs-5 d-flex align-items-center">
+          <AiOutlineLogout style={{ marginRight: '10px' }} /> Logout
+        </Nav.Link>
+      </Nav>
+    </Col>
+  </Row>
+</Navbar>
       </Col>
       <Col sm={10}>
         <Container className="border p-4" style={{ marginTop: '80px' }}>
           <Row>
             <Col>
-          <h2 className="text-center mb-4">
+            <h2 className="text-center mb-4 border-bottom pb-2">
             Welcome, {userData && userData.name}
           </h2>
           {error && <Alert variant="danger">{error}</Alert>}
@@ -894,13 +907,6 @@ export default function TeamLeaderDashboard() {
         </Table>
         </Col>
         </Row>
-        <Row className="w-100 text-center mt-2">
-              <Col>
-                <Button className="formal-button" onClick={handleLogout}>
-                  Log Out
-                </Button>
-              </Col>
-            </Row>
         </Col>
       </Row>
       </Container>

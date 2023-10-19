@@ -98,3 +98,8 @@
   .formal-table tbody tr:hover {
     background-color: #ddd; /* Hovered row background color */
   }
+
+  .high-priority-pending {
+    /* background-color: red; */
+    color: red; /* You can adjust the text color for better readability */
+  }

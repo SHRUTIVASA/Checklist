@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button, Alert, Table, Form, Modal, Container, Row, Col, Navbar, Nav } from "react-bootstrap";
+import { Card, Button, Alert, Table, Form, Modal, Container, Row, Col, Navbar, Nav, Dropdown } from "react-bootstrap";
 import { useAuth } from "../contexts/AuthContext";
 import {
   doc,
@@ -26,6 +26,8 @@ import AssignSupervisor from "../AssignSupervisor";
 import AssignTeamLeader from "../AssignTeamLeader";
 import AssignUnitHead from "../AssignUnitHead";
 import '../styles/EmployeeDashboard.css';
+import { AiOutlineUser, AiOutlineLogout } from "react-icons/ai";
+import { RiLockPasswordFill } from "react-icons/ri";
 
 
 export default function AdminDashboard() {
@@ -1079,27 +1081,38 @@ export default function AdminDashboard() {
     <Container fluid>
       <Row>
       <Col sm={2} className="bg-primary text-white p-0">
-          <Navbar expand="lg" variant="dark" className="flex-column h-100" style={{ backgroundColor: '#001D44'}}>
-            <Navbar.Brand>
-              <img
-                src={process.env.PUBLIC_URL + '/Logo.jpeg'}
-                width="150"
-                height="150"
-                className="d-inline-block align-top"
-              />
-              <h4>Checklist App</h4>
-            </Navbar.Brand>
-            <Nav className="flex-column d-flex justify-content-center flex-grow-1">
-              <Nav.Link active href="#">User Profile</Nav.Link>
-              <Nav.Link active href="#">Change Password</Nav.Link>
-            </Nav>
-          </Navbar>
+      <Navbar expand="lg" variant="dark" className="flex-column h-100" style={{ backgroundColor: '#001D44' }}>
+  <Navbar.Brand>
+    <img
+      src={process.env.PUBLIC_URL + '/Logo.png'}
+      width="150"
+      height="150"
+      className="d-inline-block align-top"
+    />
+    <h4>Checklist App</h4>
+  </Navbar.Brand>
+  <Row className="w-100 mt-4 flex-grow-1">
+    <Col className="d-flex flex-column align-items-center justify-content-center">
+      <Nav className="flex-column d-flex justify-content-center flex-grow-1">
+        <Nav.Link active href="/supervisor-dashboard" className="mb-3 fs-5 d-flex align-items-center">
+          <AiOutlineUser style={{ marginRight: '10px' }} /> User Profile
+        </Nav.Link>
+        <Nav.Link active href="/supervisor-change-password" className="mb-3 fs-5 d-flex align-items-center">
+          <RiLockPasswordFill style={{ marginRight: '10px' }} /> Change Password
+        </Nav.Link>
+        <Nav.Link active onClick={handleLogout} className="mb-3 fs-5 d-flex align-items-center">
+          <AiOutlineLogout style={{ marginRight: '10px' }} /> Logout
+        </Nav.Link>
+      </Nav>
+    </Col>
+  </Row>
+</Navbar>
       </Col>
       <Col sm={10}>
     <Container className="border p-4" style={{ marginTop: '80px' }}>
           <Row>
             <Col>
-          <h2 className="text-center mb-4">Admin Dashboard</h2>
+          <h2 className="text-center mb-4 border-bottom pb-2">Admin Dashboard</h2>
           {error && <Alert variant="danger">{error}</Alert>}
           {successMessage && <Alert variant="success">{successMessage}</Alert>}
 
@@ -1384,9 +1397,20 @@ export default function AdminDashboard() {
           </div>
         </Modal.Body>
       </Modal>
+      <div className="w-100 text-center mt-2">
+<Dropdown style={{ marginBottom: "20px" }}>
+          <Dropdown.Toggle variant="primary" id="roleDropdown">
+            Select Role
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            <Dropdown.Item onClick={handleHeadButtonClick}>Heads</Dropdown.Item>
+            <Dropdown.Item onClick={handleUnitHeadButtonClick}>Unit Heads</Dropdown.Item>
+            <Dropdown.Item onClick={handleTeamLeaderButtonClick}>Team Leaders</Dropdown.Item>
+            <Dropdown.Item onClick={handleSupervisorButtonClick}>Supervisors</Dropdown.Item>
+            <Dropdown.Item onClick={handleEmployeeButtonClick}>Employees</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
 
-      <div>
-        <Button onClick={handleHeadButtonClick}>Heads</Button>
         {showHeads && (
           <div>
             <HeadList
@@ -1396,10 +1420,7 @@ export default function AdminDashboard() {
             />
           </div>
         )}
-      </div>
-
-      <div>
-        <Button onClick={handleUnitHeadButtonClick}> Unit Heads</Button>
+        
         {showUnitHeads && (
           <div>
             <UnitHeadList
@@ -1409,10 +1430,7 @@ export default function AdminDashboard() {
             />
           </div>
         )}
-      </div>
 
-      <div>
-        <Button onClick={handleTeamLeaderButtonClick}> Team Leaders </Button>
         {showTeamLeaders && (
           <div>
             <TeamLeaderList
@@ -1422,10 +1440,7 @@ export default function AdminDashboard() {
             />
           </div>
         )}
-      </div>
 
-      <div>
-        <Button onClick={handleSupervisorButtonClick}> Supervisors </Button>
         {showSupervisors && (
           <div>
             <SupervisorList
@@ -1435,10 +1450,7 @@ export default function AdminDashboard() {
             />
           </div>
         )}
-      </div>
 
-      <div>
-        <Button onClick={handleEmployeeButtonClick}> Employees </Button>
         {showEmployees && (
           <div>
             <EmployeeList
@@ -1448,14 +1460,26 @@ export default function AdminDashboard() {
             />
           </div>
         )}
-      </div>
 
-      <Button
+<Dropdown>
+          <Dropdown.Toggle variant="primary" id="assignRoleDropdown">
+            Assign Roles
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            <Dropdown.Item onClick={() => setShowAssignEmployee(true)}>Assign Employees</Dropdown.Item>
+            <Dropdown.Item onClick={() => setShowAssignSupervisor(true)}>Assign Supervisors</Dropdown.Item>
+            <Dropdown.Item onClick={() => setShowAssignTeamleader(true)}>Assign Team Leaders</Dropdown.Item>
+            <Dropdown.Item onClick={() => setShowAssignUnitHead(true)}>Assign Unit Heads</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+        </div>
+
+      {/* <Button
         variant="primary"
         onClick={() => setShowAssignEmployee(true)} // Show the AssignEmployee form
       >
         Assign Employees
-      </Button>
+      </Button> */}
 
       {/* Assign Employee Form Modal */}
       <Modal
@@ -1474,9 +1498,9 @@ export default function AdminDashboard() {
         </Modal.Body>
       </Modal>
 
-      <Button variant="primary" onClick={() => setShowAssignSupervisor(true)}>
+      {/* <Button variant="primary" onClick={() => setShowAssignSupervisor(true)}>
         Assign Supervisors
-      </Button>
+      </Button> */}
 
       {/* Assign Supervisor Form Modal */}
       <Modal
@@ -1495,9 +1519,9 @@ export default function AdminDashboard() {
         </Modal.Body>
       </Modal>
 
-      <Button variant="primary" onClick={() => setShowAssignTeamleader(true)}>
+      {/* <Button variant="primary" onClick={() => setShowAssignTeamleader(true)}>
         Assign Teamleaders
-      </Button>
+      </Button> */}
 
       {/* Assign Teamleader Form Modal */}
       <Modal
@@ -1516,9 +1540,9 @@ export default function AdminDashboard() {
         </Modal.Body>
       </Modal>
 
-      <Button variant="primary" onClick={() => setShowAssignUnitHead(true)}>
+      {/* <Button variant="primary" onClick={() => setShowAssignUnitHead(true)}>
         Assign Unitheads
-      </Button>
+      </Button> */}
 
       {/* Assign Unithead Form Modal */}
       <Modal
@@ -1536,11 +1560,11 @@ export default function AdminDashboard() {
         </Modal.Body>
       </Modal>
 
-      <div className="w-100 text-center mt-2">
+      {/* <div className="w-100 text-center mt-2">
         <Button variant="link" onClick={handleLogout}>
           Log Out
         </Button>
-      </div>
+      </div> */}
     </Container>
     </Col>
     </Row>

@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Form, Button, Card, Alert } from "react-bootstrap";
+import { Form, Button, Card, Alert, Container, Col, Row } from "react-bootstrap";
 import { useAuth } from "./contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { doc, setDoc, collection, addDoc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 import { db } from "./firebase"; 
+import Vector from './assets/vector.jpg';
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -127,68 +128,90 @@ async function updateAdminDocument(userUID) {
   }
 
   return (
-    <container>
-      <Card>
-        <Card.Body>
-          <h2 className="text-center mb-4">Sign Up</h2>
-          {error && <Alert variant="danger">{error}</Alert>}
-          <Form onSubmit={handleSubmit}>
-            <Form.Group id="name">
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Your Name"
-                onChange={(e) => setName(e.target.value)}
-              />
-            </Form.Group>
+    <Container fluid>
+      <Row className="min-vh-100 flex-column flex-md-row justify-content-center align-items-center">
+        {/* Left side (vector) */}
+        <Col md={6} className="d-flex align-items-center justify-content-center">
+          <div>
+            <img src={Vector} alt="Vector" className="img-fluid" />
+          </div>
+        </Col>
 
-            <Form.Group id="email">
-              <Form.Label>Email</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="Email address"
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </Form.Group>
-            <Form.Group id="role">
-              <Form.Label>Select Role</Form.Label>
-              <Form.Control
-                as="select"
-                onChange={(e) => setRole(e.target.value)}
-              >
-                <option value="Employee">Employee</option>
-                <option value="Supervisor">Supervisor</option>
-                <option value="TeamLeader">Team Leader</option>
-                <option value="UnitHead">Unit Head</option>
-                <option value="Head">Head</option>
-              </Form.Control>
-            </Form.Group>
+        {/* Right side (signup card) */}
+        <Col md={4} className="d-flex align-items-center">
+          <div className="p-4 w-100">
+            <Card>
+              <Card.Body>
+                <h2 className="text-center mb-4">Sign Up</h2>
+                {error && <Alert variant="danger">{error}</Alert>}
+                <Form onSubmit={handleSubmit}>
+                  <Form.Group id="name">
+                    <Form.Label>Name</Form.Label>
+                    <Form.Control
+                      type="text"
+                      placeholder="Your Name"
+                      onChange={(e) => setName(e.target.value)}
+                    />
+                  </Form.Group>
 
-            <Form.Group id="password">
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Password"
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </Form.Group>
-            <Form.Group id="password-confirm">
-              <Form.Label>Password Confirmation</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Confirm Password"
-                onChange={(e) => setpasswordConfirm(e.target.value)}
-              />
-            </Form.Group>
-            <Button disabled={loading} className="w-100" type="submit">
-              Sign Up
-            </Button>
-          </Form>
-        </Card.Body>
-      </Card>
-      <div className="w-100 text-center mt-2">
-        Already have an account? <Link to="/login">Log In</Link>
-      </div>
-    </container>
+                  <Form.Group id="email">
+                    <Form.Label>Email</Form.Label>
+                    <Form.Control
+                      type="email"
+                      placeholder="Email address"
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </Form.Group>
+
+                  <Form.Group id="role">
+                    <Form.Label>Select Role</Form.Label>
+                    <Form.Control
+                      as="select"
+                      onChange={(e) => setRole(e.target.value)}
+                    >
+                      <option value="Employee">Employee</option>
+                      <option value="Supervisor">Supervisor</option>
+                      <option value="TeamLeader">Team Leader</option>
+                      <option value="UnitHead">Unit Head</option>
+                      <option value="Head">Head</option>
+                    </Form.Control>
+                  </Form.Group>
+
+                  <Form.Group id="password">
+                    <Form.Label>Password</Form.Label>
+                    <Form.Control
+                      type="password"
+                      placeholder="Password"
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                  </Form.Group>
+
+                  <Form.Group id="password-confirm">
+                    <Form.Label>Password Confirmation</Form.Label>
+                    <Form.Control
+                      type="password"
+                      placeholder="Confirm Password"
+                      onChange={(e) => setpasswordConfirm(e.target.value)}
+                    />
+                  </Form.Group>
+
+                  <Button disabled={loading} className="w-100 mt-3" type="submit">
+                    Sign Up
+                  </Button>
+                </Form>
+
+                <div className="w-100 text-center mt-3">
+                  <Link to="/forgot-password">Forgot Password?</Link>
+                </div>
+              </Card.Body>
+            </Card>
+
+            <div className="w-100 text-center mt-2">
+              Already have an account? <Link to="/login">Log In</Link>
+            </div>
+          </div>
+        </Col>
+      </Row>
+    </Container>
   );
 }

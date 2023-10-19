@@ -432,18 +432,23 @@ const TeamLeaderList = ({ teamLeaders, onFilterTasks, onTeamLeaderClick, onTeamL
                               <td>{task.subtask}</td>
                               <td>{task.members}</td>
                               <td>
-                                {task.status === "completed" ? (
-                                  <span>Completed</span>
-                                ) : task.status === "pending" ? (
-                                  <span>Pending</span>
-                                ) : (
-                                  <span>Work in Progress</span>
-                                )}
+                              {task.status === "completed" ? (
+                                    <span>Completed</span>
+                                  ) : task.status === "Work in Progress" ? (
+                                    <span>Work in Progress</span>
+                                  ) : task.status === "pending" &&
+                                    task.priority === "high" ? (
+                                    <span className="high-priority-pending">
+                                      Pending
+                                    </span>
+                                  ) : (
+                                    <span>Pending</span>
+                                  )}
                               </td>
                               <td>{task.endDate}</td>
                               <td>{task.priority}</td>
                               <td>
-                                <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
+                                <button onClick={() => handleDeleteTask(task.id)} className="btn btn-danger btn-sm">Delete</button>
                               </td>
                             </tr>
                           ))}
