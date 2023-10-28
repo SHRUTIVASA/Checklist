@@ -11,7 +11,6 @@ export default function AssignUnitHead({ unitHeads, onAssignUnitHead }) {
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-
   useEffect(() => {
     const fetchHeads = async () => {
       try {
@@ -88,7 +87,9 @@ export default function AssignUnitHead({ unitHeads, onAssignUnitHead }) {
         <Button variant="primary" onClick={handleSubmit}>
           Assign Unitheads
         </Button>
-        {successMessage && <div className="text-success mt-2">{successMessage}</div>}
+        {successMessage && (
+          <div className="text-success mt-2">{successMessage}</div>
+        )}
         {errorMessage && <div className="text-danger mt-2">{errorMessage}</div>}
       </Form>
     </div>

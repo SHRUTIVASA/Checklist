@@ -11,7 +11,7 @@ import {
   getDoc,
   arrayUnion, // Import arrayUnion
 } from "firebase/firestore";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import { db } from "./firebase";
 
 export default function Dashboard() {
@@ -68,15 +68,15 @@ export default function Dashboard() {
         console.log("User Doc Data:", userDocData);
         // Get the existing tasks array or initialize it as an empty array
         const userTasks = userDocData.tasks || [];
-  
+
         // Add the new task to the tasks array
         userTasks.push(newTask);
-  
+
         // Update the 'tasks' array in the user's document
         await updateDoc(userDocRef, {
           tasks: userTasks,
         });
-  
+
         setTaskFormData({
           project: "",
           task: "",
@@ -85,7 +85,7 @@ export default function Dashboard() {
           endDate: "",
           priority: "low",
         });
-  
+
         console.log("Task added to user's document");
         setSuccessMessage("Task added successfully");
         setError(""); // Clear any previous error messages
@@ -125,7 +125,6 @@ export default function Dashboard() {
       console.error("Update task status error", err);
     }
   };
-  
 
   // const handleEditTask = async (taskId, updatedtaskFormData) => {
   //   try {
@@ -161,15 +160,15 @@ export default function Dashboard() {
     try {
       // Create a copy of the tasks array without the task to be deleted
       const updatedTasks = tasks.filter((task) => task.id !== taskId);
-  
+
       // Update the frontend state by removing the task
       setTasks(updatedTasks);
-  
+
       const userDocRef = doc(db, "users", currentUser.uid);
       await updateDoc(userDocRef, {
         tasks: updatedTasks,
       });
-  
+
       setSuccessMessage("Task deleted successfully");
       setError(""); // Clear any previous error messages
     } catch (err) {
@@ -177,7 +176,6 @@ export default function Dashboard() {
       console.error("Delete task error", err);
     }
   };
-  
 
   // Fetch tasks and populate the 'tasks' state
 
@@ -209,15 +207,21 @@ export default function Dashboard() {
     return priorityOrder[taskA.priority] - priorityOrder[taskB.priority];
   };
 
-  const numTasksCompleted = tasks.filter((task) => task.status === "completed").length;
-  const numTasksPending = tasks.filter((task) => task.status === "pending").length;
+  const numTasksCompleted = tasks.filter(
+    (task) => task.status === "completed"
+  ).length;
+  const numTasksPending = tasks.filter(
+    (task) => task.status === "pending"
+  ).length;
   const numTasksAssigned = tasks.length;
 
   return (
     <container>
       <Card>
         <Card.Body>
-          <h2 className="text-center mb-4">Welcome, {currentUser.displayName}</h2>
+          <h2 className="text-center mb-4">
+            Welcome, {currentUser.displayName}
+          </h2>
           {error && <Alert variant="danger">{error}</Alert>}
           {successMessage && <Alert variant="success">{successMessage}</Alert>}
           <div className="mb-3">
@@ -325,25 +329,25 @@ export default function Dashboard() {
         </Button>
       </div>
       <div className="mt-4">
-      <div className="d-flex justify-content-between">
-      <div>
-        <h4>Task Statistics</h4>
-      </div>
-      <div>
-        <div>
-          <strong>No. of Tasks Completed: </strong>
-          {numTasksCompleted}
+        <div className="d-flex justify-content-between">
+          <div>
+            <h4>Task Statistics</h4>
+          </div>
+          <div>
+            <div>
+              <strong>No. of Tasks Completed: </strong>
+              {numTasksCompleted}
+            </div>
+            <div>
+              <strong>No. of Tasks Pending: </strong>
+              {numTasksPending}
+            </div>
+            <div>
+              <strong>No. of Tasks Assigned: </strong>
+              {numTasksAssigned}
+            </div>
+          </div>
         </div>
-        <div>
-          <strong>No. of Tasks Pending: </strong>
-          {numTasksPending}
-        </div>
-        <div>
-          <strong>No. of Tasks Assigned: </strong>
-          {numTasksAssigned}
-        </div>
-      </div>
-    </div>
         <h4>Task Table</h4>
         <Table striped bordered hover>
           <thead>
@@ -360,37 +364,41 @@ export default function Dashboard() {
             </tr>
           </thead>
           <tbody>
-            {tasks.slice()
-            .sort(sortTasksByPriority).map((task) => (
-              <tr key={task.id}>
-                <td>{task.project}</td>
-                <td>{task.task}</td>
-                <td>{task.subtask}</td>
-                <td>{task.members}</td>
-                <td>
-                {task.status === "completed" ? (
-                  <span>Completed</span>
-                ) : (
-                  <span>Pending</span>
-                )}
-              </td>
-              <td>{task.endDate}</td>
-              <td>{task.priority}</td>
-                {/*<td>
+            {tasks
+              .slice()
+              .sort(sortTasksByPriority)
+              .map((task) => (
+                <tr key={task.id}>
+                  <td>{task.project}</td>
+                  <td>{task.task}</td>
+                  <td>{task.subtask}</td>
+                  <td>{task.members}</td>
+                  <td>
+                    {task.status === "completed" ? (
+                      <span>Completed</span>
+                    ) : (
+                      <span>Pending</span>
+                    )}
+                  </td>
+                  <td>{task.endDate}</td>
+                  <td>{task.priority}</td>
+                  {/*<td>
                   <button onClick={() => handleEditTask(task.id, { subtask: "new value" })}>Edit</button>
                 </td>*/}
-                <td>
-                  <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
-                </td>
-                <td>
-                  <input
-                    type="checkbox"
-                    checked={task.status === "completed"}
-                    onChange={() => handleToggleStatus(task.id)}
-                  />
-                </td>
-              </tr>
-            ))}
+                  <td>
+                    <button onClick={() => handleDeleteTask(task.id)}>
+                      Delete
+                    </button>
+                  </td>
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={task.status === "completed"}
+                      onChange={() => handleToggleStatus(task.id)}
+                    />
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </Table>
       </div>

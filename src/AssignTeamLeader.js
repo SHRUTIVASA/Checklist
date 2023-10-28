@@ -5,14 +5,14 @@ import { db } from "./firebase";
 
 export default function AssignTeamLeader({ teamLeaders, onAssignTeamLeader }) {
   const [selectedUnitHead, setSelectedUnitHead] = useState("");
-  const [selectedTeamleaders, setSelectedTeamleaders] = useState([]); 
-  const [unitHeads, setUnitheads] = useState([]); 
+  const [selectedTeamleaders, setSelectedTeamleaders] = useState([]);
+  const [unitHeads, setUnitheads] = useState([]);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchUnitheads = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "unitheads")); 
+        const querySnapshot = await getDocs(collection(db, "unitheads"));
         const unitheadsData = querySnapshot.docs.map((doc) => ({
           uid: doc.id,
           ...doc.data(),

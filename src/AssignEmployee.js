@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { Form, Button } from "react-bootstrap";
 
-export default function AssignEmployee({ supervisors, employees, onAssignEmployee }) {
+export default function AssignEmployee({
+  supervisors,
+  employees,
+  onAssignEmployee,
+}) {
   const [selectedSupervisor, setSelectedSupervisor] = useState("");
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [error, setError] = useState(""); // State to display an error message if needed

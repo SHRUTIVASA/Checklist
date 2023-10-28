@@ -1,5 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button, Alert, Table, Form, Modal, Container, Row, Col, Navbar, Nav, Dropdown } from "react-bootstrap";
+import {
+  Card,
+  Button,
+  Alert,
+  Table,
+  Form,
+  Modal,
+  Container,
+  Row,
+  Col,
+  Navbar,
+  Nav,
+  Dropdown,
+  NavDropdown,
+} from "react-bootstrap";
 import { useAuth } from "../contexts/AuthContext";
 import {
   doc,
@@ -25,10 +39,9 @@ import AssignEmployee from "../AssignEmployee";
 import AssignSupervisor from "../AssignSupervisor";
 import AssignTeamLeader from "../AssignTeamLeader";
 import AssignUnitHead from "../AssignUnitHead";
-import '../styles/EmployeeDashboard.css';
+import "../styles/EmployeeDashboard.css";
 import { AiOutlineUser, AiOutlineLogout } from "react-icons/ai";
 import { RiLockPasswordFill } from "react-icons/ri";
-
 
 export default function AdminDashboard() {
   const { currentUser, logout } = useAuth();
@@ -263,15 +276,15 @@ export default function AdminDashboard() {
       // Step 1: Get the team leader's document data
       const teamLeaderDocRef = doc(db, "teamleaders", teamLeaderId);
       const teamLeaderDocSnapshot = await getDoc(teamLeaderDocRef);
-  
+
       if (teamLeaderDocSnapshot.exists()) {
         const teamLeaderData = teamLeaderDocSnapshot.data();
-  
+
         // Step 2: Access the "assigned" array in the team leader's document data
         if (teamLeaderData.assigned && teamLeaderData.assigned.length > 0) {
           // Step 3: Use the supervisor UIDs from the "assigned" array
           const supervisorUIDs = teamLeaderData.assigned;
-  
+
           // Step 4: Fetch the corresponding supervisor data from the "supervisors" collection
           const supervisorsCollection = collection(db, "supervisors");
           const supervisorsSnapshot = await getDocs(supervisorsCollection);
@@ -281,7 +294,7 @@ export default function AdminDashboard() {
               ...doc.data(),
             }))
             .filter((supervisor) => supervisorUIDs.includes(supervisor.uid));
-  
+
           setSupervisors(supervisorsData);
         }
       }
@@ -483,32 +496,32 @@ export default function AdminDashboard() {
       const clickedElement = event.target;
       if (clickedElement.classList.contains("bigbox")) {
         setSelectedSupervisorId(supervisorId);
-  
+
         try {
           // Fetch the supervisor's UID based on supervisorId
           const supervisorDocRef = doc(db, "supervisors", supervisorId);
           const supervisorDocSnapshot = await getDoc(supervisorDocRef);
-  
+
           if (supervisorDocSnapshot.exists()) {
             const supervisorData = supervisorDocSnapshot.data();
             const supervisorUid = supervisorData.uid;
-  
+
             // Now, you have the supervisor's UID (supervisorUid) to use in further conditions
-  
+
             // Example: Fetch assigned employees for this supervisor
             const assignedEmployeeUids = supervisorData.assigned || [];
             const assignedEmployees = [];
-  
+
             for (const employeeUid of assignedEmployeeUids) {
               const employeeDocRef = doc(db, "employees", employeeUid);
               const employeeDocSnapshot = await getDoc(employeeDocRef);
-  
+
               if (employeeDocSnapshot.exists()) {
                 const employeeData = employeeDocSnapshot.data();
                 assignedEmployees.push(employeeData);
               }
             }
-  
+
             // Set the assigned employees in the component state
             setAssignedEmployees(assignedEmployees);
           }
@@ -516,11 +529,11 @@ export default function AdminDashboard() {
           setError("Failed to fetch supervisor's data: " + err.message);
           console.error("Fetch supervisor data error", err);
         }
-  
+
         toggleEmployeeList();
       }
     }
-  };   
+  };
 
   const toggleEmployeeBoxes = () => {
     setShowEmployeeBoxes(!showEmployeeBoxes);
@@ -552,15 +565,15 @@ export default function AdminDashboard() {
         // Step 1: Get the unit head's document data
         const unitHeadDocRef = doc(db, "unitheads", unitHeadId);
         const unitHeadDocSnapshot = await getDoc(unitHeadDocRef);
-    
+
         if (unitHeadDocSnapshot.exists()) {
           const unitHeadData = unitHeadDocSnapshot.data();
-    
+
           // Step 2: Access the "assigned" array in the unit head's document data
           if (unitHeadData.assigned && unitHeadData.assigned.length > 0) {
             // Step 3: Use the team leader UIDs from the "assigned" array
             const teamLeaderUIDs = unitHeadData.assigned;
-    
+
             // Step 4: Fetch the corresponding team leader data from the "teamleaders" collection
             const teamLeadersCollection = collection(db, "teamleaders");
             const teamLeadersSnapshot = await getDocs(teamLeadersCollection);
@@ -570,7 +583,7 @@ export default function AdminDashboard() {
                 ...doc.data(),
               }))
               .filter((teamLeader) => teamLeaderUIDs.includes(teamLeader.uid));
-    
+
             setTeamLeaders(teamLeadersData);
           }
         }
@@ -580,109 +593,111 @@ export default function AdminDashboard() {
       }
     };
 
-      if (currentUser) {
-        fetchTeamLeader(currentUser.uid);
-      }
-    }, [currentUser]);
+    if (currentUser) {
+      fetchTeamLeader(currentUser.uid);
+    }
+  }, [currentUser]);
 
-    const fetchUnitHead = async (headId) => {
-      try {
-        // Step 1: Get the head's document data
-        const headDocRef = doc(db, "heads", headId);
-        const headDocSnapshot = await getDoc(headDocRef);
-    
-        if (headDocSnapshot.exists()) {
-          const headData = headDocSnapshot.data();
-    
-          // Step 2: Access the "assigned" array in the head's document data
-          if (headData.assigned && headData.assigned.length > 0) {
-            // Step 3: Use the unit head UIDs from the "assigned" array
-            const unitHeadUIDs = headData.assigned;
-    
-            // Step 4: Fetch the corresponding unit head data from the "unitheads" collection
-            const unitHeadsCollection = collection(db, "unitheads");
-            const unitHeadsSnapshot = await getDocs(unitHeadsCollection);
-            const unitHeadsData = unitHeadsSnapshot.docs
-              .map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-              }))
-              .filter((unitHead) => unitHeadUIDs.includes(unitHead.uid));
-    
-            setUnitHeads(unitHeadsData);
-          }
-        }
-      } catch (error) {
-        setError("Failed to fetch unit heads: " + error.message);
-        console.error("Fetch Unit Heads error", error);
-      }
-    };  
-  
-    useEffect(() => {
-      fetchUnitHead(currentUser.uid);
-    }, []);
+  const fetchUnitHead = async (headId) => {
+    try {
+      // Step 1: Get the head's document data
+      const headDocRef = doc(db, "heads", headId);
+      const headDocSnapshot = await getDoc(headDocRef);
 
-    const handleUnitHeadBoxClick = async (unitHeadId, event) => {
-      if (event) {
-        // Check if the click target has the class "big-box"
-        const clickedElement = event.target;
-        if (clickedElement.classList.contains("bigbox")) {
-          setSelectedUnitHeadId(unitHeadId);
-    
-          const selectedUnitHead = unitHeads.find((unitHead) => unitHead.uid === unitHeadId);
-          setSelectedUnitHeadInfo(selectedUnitHead);
-    
-          // Fetch and set the selected unit head's tasks
-          try {
-            const unitHeadDocRef = doc(db, "unitheads", unitHeadId);
-            const unitHeadDocSnapshot = await getDoc(unitHeadDocRef);
-    
-            if (unitHeadDocSnapshot.exists()) {
-              const unitHeadData = unitHeadDocSnapshot.data();
-              setSelectedUnitHeadTasks(unitHeadData.tasks || []);
-            }
-          } catch (err) {
-            setError("Failed to fetch unit head's tasks: " + err.message);
-            console.error("Fetch unit head tasks error", err);
-          }
-    
-          // Fetch TeamLeaders based on the 'assigned' array in the Unit Head document
-          try {
-            const unitHeadDocRef = doc(db, "unitheads", unitHeadId);
-            const unitHeadDocSnapshot = await getDoc(unitHeadDocRef);
-    
-            if (unitHeadDocSnapshot.exists()) {
-              const unitHeadData = unitHeadDocSnapshot.data();
-              const assignedTeamLeaderUids = unitHeadData.assigned || [];
-    
-              // Fetch TeamLeaders from 'teamleaders' collection based on the UIDs
-              const teamLeadersCollection = collection(db, "teamleaders");
-              const teamLeadersQuery = query(
-                teamLeadersCollection,
-                where("uid", "in", assignedTeamLeaderUids)
-              );
-              const teamLeadersSnapshot = await getDocs(teamLeadersQuery);
-    
-              // Map the TeamLeaders' data
-              const teamLeadersData = teamLeadersSnapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-              }));
-    
-              // Update the state with the TeamLeaders
-              setTeamLeaders(teamLeadersData);
-            }
-          } catch (err) {
-            setError("Failed to fetch TeamLeaders: " + err.message);
-            console.error("Fetch TeamLeaders error", err);
-          }
-    
-          // Show the TeamLeader List
-          setShowTeamLeaderList(true);
-          setShowUnitHeadList(false);
+      if (headDocSnapshot.exists()) {
+        const headData = headDocSnapshot.data();
+
+        // Step 2: Access the "assigned" array in the head's document data
+        if (headData.assigned && headData.assigned.length > 0) {
+          // Step 3: Use the unit head UIDs from the "assigned" array
+          const unitHeadUIDs = headData.assigned;
+
+          // Step 4: Fetch the corresponding unit head data from the "unitheads" collection
+          const unitHeadsCollection = collection(db, "unitheads");
+          const unitHeadsSnapshot = await getDocs(unitHeadsCollection);
+          const unitHeadsData = unitHeadsSnapshot.docs
+            .map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }))
+            .filter((unitHead) => unitHeadUIDs.includes(unitHead.uid));
+
+          setUnitHeads(unitHeadsData);
         }
       }
-    };
+    } catch (error) {
+      setError("Failed to fetch unit heads: " + error.message);
+      console.error("Fetch Unit Heads error", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUnitHead(currentUser.uid);
+  }, []);
+
+  const handleUnitHeadBoxClick = async (unitHeadId, event) => {
+    if (event) {
+      // Check if the click target has the class "big-box"
+      const clickedElement = event.target;
+      if (clickedElement.classList.contains("bigbox")) {
+        setSelectedUnitHeadId(unitHeadId);
+
+        const selectedUnitHead = unitHeads.find(
+          (unitHead) => unitHead.uid === unitHeadId
+        );
+        setSelectedUnitHeadInfo(selectedUnitHead);
+
+        // Fetch and set the selected unit head's tasks
+        try {
+          const unitHeadDocRef = doc(db, "unitheads", unitHeadId);
+          const unitHeadDocSnapshot = await getDoc(unitHeadDocRef);
+
+          if (unitHeadDocSnapshot.exists()) {
+            const unitHeadData = unitHeadDocSnapshot.data();
+            setSelectedUnitHeadTasks(unitHeadData.tasks || []);
+          }
+        } catch (err) {
+          setError("Failed to fetch unit head's tasks: " + err.message);
+          console.error("Fetch unit head tasks error", err);
+        }
+
+        // Fetch TeamLeaders based on the 'assigned' array in the Unit Head document
+        try {
+          const unitHeadDocRef = doc(db, "unitheads", unitHeadId);
+          const unitHeadDocSnapshot = await getDoc(unitHeadDocRef);
+
+          if (unitHeadDocSnapshot.exists()) {
+            const unitHeadData = unitHeadDocSnapshot.data();
+            const assignedTeamLeaderUids = unitHeadData.assigned || [];
+
+            // Fetch TeamLeaders from 'teamleaders' collection based on the UIDs
+            const teamLeadersCollection = collection(db, "teamleaders");
+            const teamLeadersQuery = query(
+              teamLeadersCollection,
+              where("uid", "in", assignedTeamLeaderUids)
+            );
+            const teamLeadersSnapshot = await getDocs(teamLeadersQuery);
+
+            // Map the TeamLeaders' data
+            const teamLeadersData = teamLeadersSnapshot.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }));
+
+            // Update the state with the TeamLeaders
+            setTeamLeaders(teamLeadersData);
+          }
+        } catch (err) {
+          setError("Failed to fetch TeamLeaders: " + err.message);
+          console.error("Fetch TeamLeaders error", err);
+        }
+
+        // Show the TeamLeader List
+        setShowTeamLeaderList(true);
+        setShowUnitHeadList(false);
+      }
+    }
+  };
 
   const toggleunitHeadBoxes = () => {
     setShowUnitHeadBoxes(!showUnitHeadBoxes);
@@ -693,15 +708,15 @@ export default function AdminDashboard() {
       // Step 1: Get the unit head's document data
       const unitHeadDocRef = doc(db, "unitheads", unitHeadId);
       const unitHeadDocSnapshot = await getDoc(unitHeadDocRef);
-  
+
       if (unitHeadDocSnapshot.exists()) {
         const unitHeadData = unitHeadDocSnapshot.data();
-  
+
         // Step 2: Access the "assigned" array in the unit head's document data
         if (unitHeadData.assigned && unitHeadData.assigned.length > 0) {
           // Step 3: Use the team leader UIDs from the "assigned" array
           const teamLeaderUIDs = unitHeadData.assigned;
-  
+
           // Step 4: Fetch the corresponding team leader data from the "teamleaders" collection
           const teamLeadersCollection = collection(db, "teamleaders");
           const teamLeadersSnapshot = await getDocs(teamLeadersCollection);
@@ -711,7 +726,7 @@ export default function AdminDashboard() {
               ...doc.data(),
             }))
             .filter((teamLeader) => teamLeaderUIDs.includes(teamLeader.uid));
-  
+
           setTeamLeaders(teamLeadersData);
         }
       }
@@ -720,7 +735,7 @@ export default function AdminDashboard() {
       console.error("Fetch Team Leader error", error);
     }
   };
-  
+
   useEffect(() => {
     if (currentUser) {
       fetchTeamLeader(currentUser.uid);
@@ -733,32 +748,32 @@ export default function AdminDashboard() {
       const clickedElement = event.target;
       if (clickedElement.classList.contains("bigbox")) {
         setSelectedTeamLeaderId(teamLeaderId);
-  
+
         try {
           // Fetch the team leader's data
           const teamLeaderDocRef = doc(db, "teamleaders", teamLeaderId);
           const teamLeaderDocSnapshot = await getDoc(teamLeaderDocRef);
-  
+
           if (teamLeaderDocSnapshot.exists()) {
             const teamLeaderData = teamLeaderDocSnapshot.data();
-  
+
             // Get the assigned supervisor UIDs from the team leader's data
             const supervisorUIDs = teamLeaderData.assigned || [];
-  
+
             // Array to store supervisor data
             const supervisorsData = [];
-  
+
             // Fetch supervisor data for each UID
             for (const supervisorUid of supervisorUIDs) {
               const supervisorDocRef = doc(db, "supervisors", supervisorUid);
               const supervisorDocSnapshot = await getDoc(supervisorDocRef);
-  
+
               if (supervisorDocSnapshot.exists()) {
                 const supervisorData = supervisorDocSnapshot.data();
                 supervisorsData.push(supervisorData);
               }
             }
-  
+
             // Update the state with the filtered supervisors
             setFilteredSupervisors(supervisorsData);
           }
@@ -766,12 +781,12 @@ export default function AdminDashboard() {
           setError("Failed to fetch Team Leader's tasks: " + err.message);
           console.error("Fetch Team Leader tasks error", err);
         }
-  
+
         setShowSupervisorList(true);
         setShowTeamLeaderList(false);
       }
     }
-  };  
+  };
 
   const toggleSupervisorBoxes = () => {
     setShowSupervisorBoxes(!showSupervisorBoxes);
@@ -801,44 +816,46 @@ export default function AdminDashboard() {
       const clickedElement = event.target;
       if (clickedElement.classList.contains("bigbox")) {
         setSelectedHeadId(headId);
-  
+
         // Fetch and set the selected head's tasks
         try {
           const headDocRef = doc(db, "heads", headId);
           const headDocSnapshot = await getDoc(headDocRef);
-  
+
           if (headDocSnapshot.exists()) {
             const headData = headDocSnapshot.data();
             setSelectedHeadTasks(headData.tasks || []);
-  
+
             // Fetch unit head data for the selected head
             const assignedUnitHeadUIDs = headData.assigned || []; // Assuming 'assigned' is the array in the head's document
             const unitHeadsData = [];
-  
+
             // Filter unit heads based on assignedUnitHeadUIDs
             for (const unitHeadUid of assignedUnitHeadUIDs) {
               const unitHeadDocRef = doc(db, "unitheads", unitHeadUid);
               const unitHeadDocSnapshot = await getDoc(unitHeadDocRef);
-  
+
               if (unitHeadDocSnapshot.exists()) {
                 const unitHeadData = unitHeadDocSnapshot.data();
                 unitHeadsData.push(unitHeadData);
               }
             }
-  
+
             // Update the state with the filtered unit heads
             setFilteredUnitHeads(unitHeadsData);
           }
         } catch (err) {
-          setError("Failed to fetch head's tasks and unit heads: " + err.message);
+          setError(
+            "Failed to fetch head's tasks and unit heads: " + err.message
+          );
           console.error("Fetch head tasks and unit heads error", err);
         }
-  
+
         setShowHeadList(false);
         setShowUnitHeadList(true);
       }
     }
-  };  
+  };
 
   const toggleHeadBoxes = () => {
     setShowHeadBoxes(!showHeadBoxes);
@@ -947,21 +964,21 @@ export default function AdminDashboard() {
           assigned: updatedAssigned,
         });
 
-        setShowAssignEmployee(false); 
+        setShowAssignEmployee(false);
       } else {
         // If the supervisor document doesn't exist, create it with the 'assigned' array
         await setDoc(supervisorDocumentRef, {
           assigned: selectedEmployees,
         });
 
-        setShowAssignEmployee(false); 
+        setShowAssignEmployee(false);
         setSuccessMessage("Employees assigned successfully.");
         setError("");
       }
     } catch (error) {
       // Handle any errors that may occur during the Firestore update
       console.error("Error assigning employees:", error);
-      setSuccessMessage(""); 
+      setSuccessMessage("");
       setError("Error assigning Employees. Please try again later.");
     }
   };
@@ -992,14 +1009,14 @@ export default function AdminDashboard() {
           assigned: selectedSupervisors,
         });
 
-        setShowAssignSupervisor(false); 
+        setShowAssignSupervisor(false);
         setSuccessMessage("Supervisors assigned successfully.");
         setError("");
       }
     } catch (error) {
       // Handle any errors that may occur during the Firestore update
       console.error("Error assigning supervisors:", error);
-      setSuccessMessage(""); 
+      setSuccessMessage("");
       setError("Error assigning Supervisors. Please try again later.");
     }
   };
@@ -1030,14 +1047,14 @@ export default function AdminDashboard() {
           assigned: selectedTeamleaders,
         });
 
-        setShowAssignTeamleader(false); 
+        setShowAssignTeamleader(false);
         setSuccessMessage("Team Leaders assigned successfully.");
         setError("");
       }
     } catch (error) {
       // Handle any errors that may occur during the Firestore update
       console.error("Error assigning teamleaders:", error);
-      setSuccessMessage(""); 
+      setSuccessMessage("");
       setError("Error assigning Team Leaders. Please try again later.");
     }
   };
@@ -1072,7 +1089,7 @@ export default function AdminDashboard() {
     } catch (error) {
       // Handle any errors that may occur during the Firestore update
       console.error("Error assigning unitheads:", error);
-      setSuccessMessage(""); 
+      setSuccessMessage("");
       setError("Error assigning unitheads. Please try again later.");
     }
   };
@@ -1080,325 +1097,422 @@ export default function AdminDashboard() {
   return (
     <Container fluid>
       <Row>
-      <Col sm={2} className="bg-primary text-white p-0">
-      <Navbar expand="lg" variant="dark" className="flex-column h-100" style={{ backgroundColor: '#001D44' }}>
-  <Navbar.Brand>
-    <img
-      src={process.env.PUBLIC_URL + '/Logo.png'}
-      width="150"
-      height="150"
-      className="d-inline-block align-top"
-    />
-    <h4>Checklist App</h4>
-  </Navbar.Brand>
-  <Row className="w-100 mt-4 flex-grow-1">
-    <Col className="d-flex flex-column align-items-center justify-content-center">
-      <Nav className="flex-column d-flex justify-content-center flex-grow-1">
-        <Nav.Link active href="/supervisor-dashboard" className="mb-3 fs-5 d-flex align-items-center">
-          <AiOutlineUser style={{ marginRight: '10px' }} /> User Profile
-        </Nav.Link>
-        <Nav.Link active href="/supervisor-change-password" className="mb-3 fs-5 d-flex align-items-center">
-          <RiLockPasswordFill style={{ marginRight: '10px' }} /> Change Password
-        </Nav.Link>
-        <Nav.Link active onClick={handleLogout} className="mb-3 fs-5 d-flex align-items-center">
-          <AiOutlineLogout style={{ marginRight: '10px' }} /> Logout
-        </Nav.Link>
-      </Nav>
-    </Col>
-  </Row>
-</Navbar>
-      </Col>
-      <Col sm={10}>
-    <Container className="border p-4" style={{ marginTop: '80px' }}>
-          <Row>
-            <Col>
-          <h2 className="text-center mb-4 border-bottom pb-2">Admin Dashboard</h2>
-          {error && <Alert variant="danger">{error}</Alert>}
-          {successMessage && <Alert variant="success">{successMessage}</Alert>}
-
-          {showHeadList && (
-            <div>
-              <HeadList
-                heads={heads}
-                onHeadClick={(headId, event) =>
-                  handleHeadBoxClick(headId, event)
-                }
-                toggleHeadBoxes={toggleHeadBoxes}
-                onFilterTasks={handleFilterTasks}
-              />
-            </div>
-          )}
-          {showUnitHeadList && !showHeadList && (
-            <div>
-              <UnitHeadList
-                unitHeads={filteredUnitHeads}
-                onUnitHeadClick={(unitHeadId, event) =>
-                  handleUnitHeadBoxClick(unitHeadId, event)
-                }
-                toggleunitHeadBoxes={toggleunitHeadBoxes}
-                onFilterTasks={handleFilterTasks}
-              />
-              <Button
-                variant="primary"
-                onClick={() => {
-                  setShowUnitHeadList(false);
-                  setShowHeadList(true);
-                }}
-              >
-                Go Back to Heads
-              </Button>
-            </div>
-          )}
-
-          {showTeamLeaderList && (
-            <div>
-              <TeamLeaderList
-                teamLeaders={teamLeaders}
-                onFilterTasks={handleFilterTasks}
-                toggleSupervisorBoxes={toggleSupervisorBoxes}
-                onTeamLeaderBoxClick={(teamLeaderId, event) =>
-                  handleTeamLeaderBoxClick(teamLeaderId, event)
-                }
-              />
-              <Button
-                variant="primary"
-                onClick={() => {
-                  setShowTeamLeaderList(false);
-                  setShowUnitHeadList(true);
-                }}
-              >
-                Go Back to Unit Heads
-              </Button>
-            </div>
-          )}
-          {showSupervisorList && !showEmployeeList && (
-            <div>
-              <SupervisorList
-                supervisors={filteredSupervisors}
-                onFilterTasks={handleFilterTasks}
-                onSupervisorClick={(supervisorId, event) =>
-                  handleSupervisorBoxClick(supervisorId, event)
-                }
-                toggleEmployeeBoxes={toggleEmployeeBoxes}
-                onSupervisorBoxClick={handleSupervisorBoxClick}
-              />
-              <Button
-                variant="primary"
-                onClick={() => {
-                  setShowSupervisorList(false);
-                  setShowTeamLeaderList(true);
-                }}
-              >
-                Go Back to Team Leaders
-              </Button>
-            </div>
-          )}
-
-          {showEmployeeList && (
-            <div>
-              <EmployeeList
-                employees={assignedEmployees}
-                onFilterTasks={filterTasks}
-                onEmployeeClick={handleEmployeeClick}
-              />
-              <Button
-                type="button"
-                variant="primary"
-                onClick={() => {
-                  setShowEmployeeList(false);
-                  setShowSupervisorList(true);
-                }}
-              >
-                Go Back to Supervisors
-              </Button>
-            </div>
-          )}
-          <Button
-            type="button"
-            variant="primary"
-            onClick={() => setShowTaskForm(true)}
+        <Col sm={2} className="bg-primary text-white p-0">
+          <Navbar
+            expand="lg"
+            variant="dark"
+            className="d-flex flex-column vh-100"
+            style={{ backgroundColor: "#001D44" }}
           >
-            Assign Task
-          </Button>
+            {/* <div className="flex-grow-1"></div> */}
+            <Navbar.Brand>
+              <img
+                src={process.env.PUBLIC_URL + "/Logo.png"}
+                width="150"
+                height="150"
+                className="d-inline-block align-top"
+              />
+              <h4>Checklist App</h4>
+            </Navbar.Brand>
+            {/* <div className="ms-auto"></div> */}
+            <Row className="w-100 mt-4 flex-grow-1">
+              <Col className="d-flex flex-column align-items-center justify-content-end">
+                <Nav className="flex-column d-flex justify-content-center ml-auto">
+                  <Nav.Link active className=" fs-5 d-flex align-items-center">
+                    {/* <NavDropdown style={{ marginBottom: "20px" }}>
+          <NavDropdown.Toggle variant="primary" id="roleDropdown">
+            Select Role
+          </NavDropdown.Toggle>
+          <NavDropdown.Menu>
+            <NavDropdown.Item onClick={handleHeadButtonClick}>Heads</NavDropdown.Item>
+            <NavDropdown.Item onClick={handleUnitHeadButtonClick}>Unit Heads</NavDropdown.Item>
+            <NavDropdown.Item onClick={handleTeamLeaderButtonClick}>Team Leaders</NavDropdown.Item>
+            <NavDropdown.Item onClick={handleSupervisorButtonClick}>Supervisors</NavDropdown.Item>
+            <NavDropdown.Item onClick={handleEmployeeButtonClick}>Employees</NavDropdown.Item>
+          </NavDropdown.Menu>
+        </NavDropdown> */}
+                    <NavDropdown active title="Select Role" id="roleDropdown">
+                      <NavDropdown.Item onClick={handleHeadButtonClick}>
+                        Heads
+                      </NavDropdown.Item>
+                      <NavDropdown.Item onClick={handleUnitHeadButtonClick}>
+                        Unit Heads
+                      </NavDropdown.Item>
+                      <NavDropdown.Item onClick={handleTeamLeaderButtonClick}>
+                        Team Leaders
+                      </NavDropdown.Item>
+                      <NavDropdown.Item onClick={handleSupervisorButtonClick}>
+                        Supervisors
+                      </NavDropdown.Item>
+                      <NavDropdown.Item onClick={handleEmployeeButtonClick}>
+                        Employees
+                      </NavDropdown.Item>
+                    </NavDropdown>
+                  </Nav.Link>
+                  <Nav.Link active className="fs-5 d-flex align-items-center">
+                    <NavDropdown
+                      active
+                      title="Assign Roles"
+                      id="assignRoleDropdown"
+                    >
+                      <NavDropdown.Item
+                        onClick={() => setShowAssignEmployee(true)}
+                      >
+                        Assign Employees
+                      </NavDropdown.Item>
+                      <NavDropdown.Item
+                        onClick={() => setShowAssignSupervisor(true)}
+                      >
+                        Assign Supervisors
+                      </NavDropdown.Item>
+                      <NavDropdown.Item
+                        onClick={() => setShowAssignTeamleader(true)}
+                      >
+                        Assign Team Leaders
+                      </NavDropdown.Item>
+                      <NavDropdown.Item
+                        onClick={() => setShowAssignUnitHead(true)}
+                      >
+                        Assign Unit Heads
+                      </NavDropdown.Item>
+                    </NavDropdown>
+                    {/* <Dropdown>
+          <Dropdown.Toggle variant="primary" id="assignRoleDropdown">
+            Assign Roles
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            <Dropdown.Item onClick={() => setShowAssignEmployee(true)}>Assign Employees</Dropdown.Item>
+            <Dropdown.Item onClick={() => setShowAssignSupervisor(true)}>Assign Supervisors</Dropdown.Item>
+            <Dropdown.Item onClick={() => setShowAssignTeamleader(true)}>Assign Team Leaders</Dropdown.Item>
+            <Dropdown.Item onClick={() => setShowAssignUnitHead(true)}>Assign Unit Heads</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown> */}
+                  </Nav.Link>
+                  <Nav.Link
+                    active
+                    href="/supervisor-dashboard"
+                    className="mb-3 fs-5 d-flex align-items-center"
+                  >
+                    <AiOutlineUser style={{ marginRight: "10px" }} /> User
+                    Profile
+                  </Nav.Link>
+                  <Nav.Link
+                    active
+                    href="/supervisor-change-password"
+                    className="mb-3 fs-5 d-flex align-items-center"
+                  >
+                    <RiLockPasswordFill style={{ marginRight: "10px" }} />{" "}
+                    Change Password
+                  </Nav.Link>
+                  <Nav.Link
+                    active
+                    onClick={handleLogout}
+                    className="mb-3 fs-5 d-flex align-items-center"
+                  >
+                    <AiOutlineLogout style={{ marginRight: "10px" }} /> Logout
+                  </Nav.Link>
+                </Nav>
+              </Col>
+            </Row>
+          </Navbar>
         </Col>
-        </Row>
-      {/* Task Assignment Form Modal */}
-      <Modal show={showTaskForm} onHide={() => setShowTaskForm(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Assign Task</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div className="mb-3">
-            <Form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleAddTask(e);
-              }}
-            >
-              <Form.Group controlId="project">
-                <Form.Label>Project</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="project"
-                  value={formData.project}
-                  onChange={handleInputChange}
-                  required
-                />
-              </Form.Group>
-              <Form.Group controlId="taskName">
-                <Form.Label>Task Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="taskName"
-                  value={formData.taskName}
-                  onChange={handleInputChange}
-                  required
-                />
-              </Form.Group>
-              <Form.Group controlId="subtaskName">
-                <Form.Label>Subtask Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  name="subtaskName"
-                  value={formData.subtaskName}
-                  onChange={handleInputChange}
-                  required
-                />
-              </Form.Group>
-              <Form.Group controlId="members">
-                <Form.Label>Members</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="members"
-                  value={formData.members}
-                  onChange={handleInputChange}
-                  required
-                />
-              </Form.Group>
-              <Form.Group controlId="status">
-                <Form.Label>Status</Form.Label>
-                <Form.Control
-                  as="select"
-                  name="status"
-                  value={formData.status}
-                  onChange={handleInputChange}
-                  required
+        <Col sm={10} className="max-height">
+          <Container className="border p-4" style={{ marginTop: "80px" }}>
+            <Row>
+              <Col>
+                <h2 className="text-center mb-4 border-bottom pb-2">
+                  Admin Dashboard
+                </h2>
+                {error && <Alert variant="danger">{error}</Alert>}
+                {successMessage && (
+                  <Alert variant="success">{successMessage}</Alert>
+                )}
+
+                {showHeadList && (
+                  <div>
+                    <HeadList
+                      heads={heads}
+                      onHeadClick={(headId, event) =>
+                        handleHeadBoxClick(headId, event)
+                      }
+                      toggleHeadBoxes={toggleHeadBoxes}
+                      onFilterTasks={handleFilterTasks}
+                    />
+                  </div>
+                )}
+                {showUnitHeadList && !showHeadList && (
+                  <div>
+                    <UnitHeadList
+                      unitHeads={filteredUnitHeads}
+                      onUnitHeadClick={(unitHeadId, event) =>
+                        handleUnitHeadBoxClick(unitHeadId, event)
+                      }
+                      toggleunitHeadBoxes={toggleunitHeadBoxes}
+                      onFilterTasks={handleFilterTasks}
+                    />
+                    <Button
+                      variant="primary"
+                      onClick={() => {
+                        setShowUnitHeadList(false);
+                        setShowHeadList(true);
+                      }}
+                    >
+                      Go Back to Heads
+                    </Button>
+                  </div>
+                )}
+
+                {showTeamLeaderList && (
+                  <div>
+                    <TeamLeaderList
+                      teamLeaders={teamLeaders}
+                      onFilterTasks={handleFilterTasks}
+                      toggleSupervisorBoxes={toggleSupervisorBoxes}
+                      onTeamLeaderBoxClick={(teamLeaderId, event) =>
+                        handleTeamLeaderBoxClick(teamLeaderId, event)
+                      }
+                    />
+                    <Button
+                      variant="primary"
+                      onClick={() => {
+                        setShowTeamLeaderList(false);
+                        setShowUnitHeadList(true);
+                      }}
+                    >
+                      Go Back to Unit Heads
+                    </Button>
+                  </div>
+                )}
+                {showSupervisorList && !showEmployeeList && (
+                  <div>
+                    <SupervisorList
+                      supervisors={filteredSupervisors}
+                      onFilterTasks={handleFilterTasks}
+                      onSupervisorClick={(supervisorId, event) =>
+                        handleSupervisorBoxClick(supervisorId, event)
+                      }
+                      toggleEmployeeBoxes={toggleEmployeeBoxes}
+                      onSupervisorBoxClick={handleSupervisorBoxClick}
+                    />
+                    <Button
+                      variant="primary"
+                      onClick={() => {
+                        setShowSupervisorList(false);
+                        setShowTeamLeaderList(true);
+                      }}
+                    >
+                      Go Back to Team Leaders
+                    </Button>
+                  </div>
+                )}
+
+                {showEmployeeList && (
+                  <div>
+                    <EmployeeList
+                      employees={assignedEmployees}
+                      onFilterTasks={filterTasks}
+                      onEmployeeClick={handleEmployeeClick}
+                    />
+                    <Button
+                      type="button"
+                      variant="primary"
+                      onClick={() => {
+                        setShowEmployeeList(false);
+                        setShowSupervisorList(true);
+                      }}
+                    >
+                      Go Back to Supervisors
+                    </Button>
+                  </div>
+                )}
+                <Button
+                  type="button"
+                  variant="primary"
+                  onClick={() => setShowTaskForm(true)}
                 >
-                  <option value="completed">Completed</option>
-                  <option value="pending">Pending</option>
-                  <option value="Work in Progress">Work in Progress</option>
-                </Form.Control>
-              </Form.Group>
+                  Assign Task
+                </Button>
+              </Col>
+            </Row>
+            {/* Task Assignment Form Modal */}
+            <Modal show={showTaskForm} onHide={() => setShowTaskForm(false)}>
+              <Modal.Header closeButton>
+                <Modal.Title>Assign Task</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="mb-3">
+                  <Form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      handleAddTask(e);
+                    }}
+                  >
+                    <Form.Group controlId="project">
+                      <Form.Label>Project</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="project"
+                        value={formData.project}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group controlId="taskName">
+                      <Form.Label>Task Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="taskName"
+                        value={formData.taskName}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group controlId="subtaskName">
+                      <Form.Label>Subtask Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="subtaskName"
+                        value={formData.subtaskName}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group controlId="members">
+                      <Form.Label>Members</Form.Label>
+                      <Form.Control
+                        type="number"
+                        name="members"
+                        value={formData.members}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </Form.Group>
+                    <Form.Group controlId="status">
+                      <Form.Label>Status</Form.Label>
+                      <Form.Control
+                        as="select"
+                        name="status"
+                        value={formData.status}
+                        onChange={handleInputChange}
+                        required
+                      >
+                        <option value="completed">Completed</option>
+                        <option value="pending">Pending</option>
+                        <option value="Work in Progress">
+                          Work in Progress
+                        </option>
+                      </Form.Control>
+                    </Form.Group>
 
-              <Form.Group controlId="heads">
-                <Form.Label>Heads</Form.Label>
-                {heads.map((head) => (
-                  <Form.Check
-                    key={head.id}
-                    type="checkbox"
-                    id={head.id}
-                    label={head.name}
-                    value={head.name}
-                    onChange={handleInputChange}
-                    name="heads"
-                  />
-                ))}
-              </Form.Group>
+                    <Form.Group controlId="heads">
+                      <Form.Label>Heads</Form.Label>
+                      {heads.map((head) => (
+                        <Form.Check
+                          key={head.id}
+                          type="checkbox"
+                          id={head.id}
+                          label={head.name}
+                          value={head.name}
+                          onChange={handleInputChange}
+                          name="heads"
+                        />
+                      ))}
+                    </Form.Group>
 
-              <Form.Group controlId="unitheads">
-                <Form.Label>Unit Heads</Form.Label>
-                {unitHeads.map((unithead) => (
-                  <Form.Check
-                    key={unithead.id}
-                    type="checkbox"
-                    id={unithead.id}
-                    label={unithead.name}
-                    value={unithead.name}
-                    onChange={handleInputChange}
-                    name="unitheads"
-                  />
-                ))}
-              </Form.Group>
+                    <Form.Group controlId="unitheads">
+                      <Form.Label>Unit Heads</Form.Label>
+                      {unitHeads.map((unithead) => (
+                        <Form.Check
+                          key={unithead.id}
+                          type="checkbox"
+                          id={unithead.id}
+                          label={unithead.name}
+                          value={unithead.name}
+                          onChange={handleInputChange}
+                          name="unitheads"
+                        />
+                      ))}
+                    </Form.Group>
 
-              <Form.Group controlId="TeamLeaders">
-                <Form.Label>Team Leaders</Form.Label>
-                {teamLeaders.map((TeamLeader) => (
-                  <Form.Check
-                    key={TeamLeader.id}
-                    type="checkbox"
-                    id={TeamLeader.id}
-                    label={TeamLeader.name}
-                    value={TeamLeader.name}
-                    onChange={handleInputChange}
-                    name="TeamLeaders"
-                  />
-                ))}
-              </Form.Group>
+                    <Form.Group controlId="TeamLeaders">
+                      <Form.Label>Team Leaders</Form.Label>
+                      {teamLeaders.map((TeamLeader) => (
+                        <Form.Check
+                          key={TeamLeader.id}
+                          type="checkbox"
+                          id={TeamLeader.id}
+                          label={TeamLeader.name}
+                          value={TeamLeader.name}
+                          onChange={handleInputChange}
+                          name="TeamLeaders"
+                        />
+                      ))}
+                    </Form.Group>
 
-              <Form.Group controlId="supervisors">
-                <Form.Label>Supervisors</Form.Label>
-                {supervisors.map((supervisor) => (
-                  <Form.Check
-                    key={supervisor.id}
-                    type="checkbox"
-                    id={supervisor.id}
-                    label={supervisor.name}
-                    value={supervisor.name}
-                    onChange={handleInputChange}
-                    name="supervisors"
-                  />
-                ))}
-              </Form.Group>
+                    <Form.Group controlId="supervisors">
+                      <Form.Label>Supervisors</Form.Label>
+                      {supervisors.map((supervisor) => (
+                        <Form.Check
+                          key={supervisor.id}
+                          type="checkbox"
+                          id={supervisor.id}
+                          label={supervisor.name}
+                          value={supervisor.name}
+                          onChange={handleInputChange}
+                          name="supervisors"
+                        />
+                      ))}
+                    </Form.Group>
 
-              <Form.Group controlId="employees">
-                <Form.Label>Employees</Form.Label>
-                {employees.map((employee) => (
-                  <Form.Check
-                    key={employee.id}
-                    type="checkbox"
-                    id={employee.id}
-                    label={employee.name}
-                    value={employee.name}
-                    onChange={handleInputChange}
-                    name="employees"
-                  />
-                ))}
-              </Form.Group>
+                    <Form.Group controlId="employees">
+                      <Form.Label>Employees</Form.Label>
+                      {employees.map((employee) => (
+                        <Form.Check
+                          key={employee.id}
+                          type="checkbox"
+                          id={employee.id}
+                          label={employee.name}
+                          value={employee.name}
+                          onChange={handleInputChange}
+                          name="employees"
+                        />
+                      ))}
+                    </Form.Group>
 
-              <Form.Group controlId="endDate">
-                <Form.Label>End Date</Form.Label>
-                <Form.Control
-                  type="date"
-                  name="endDate"
-                  value={formData.endDate}
-                  onChange={handleInputChange}
-                  required
-                />
-              </Form.Group>
+                    <Form.Group controlId="endDate">
+                      <Form.Label>End Date</Form.Label>
+                      <Form.Control
+                        type="date"
+                        name="endDate"
+                        value={formData.endDate}
+                        onChange={handleInputChange}
+                        required
+                      />
+                    </Form.Group>
 
-              <Form.Group controlId="priority">
-                <Form.Label>Priority</Form.Label>
-                <Form.Control
-                  as="select"
-                  name="priority"
-                  value={formData.priority}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
-                </Form.Control>
-              </Form.Group>
-              <Button type="submit" className="w-100">
-                Add Task
-              </Button>
-            </Form>
-          </div>
-        </Modal.Body>
-      </Modal>
-      <div className="w-100 text-center mt-2">
-<Dropdown style={{ marginBottom: "20px" }}>
+                    <Form.Group controlId="priority">
+                      <Form.Label>Priority</Form.Label>
+                      <Form.Control
+                        as="select"
+                        name="priority"
+                        value={formData.priority}
+                        onChange={handleInputChange}
+                        required
+                      >
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                      </Form.Control>
+                    </Form.Group>
+                    <Button type="submit" className="w-100">
+                      Add Task
+                    </Button>
+                  </Form>
+                </div>
+              </Modal.Body>
+            </Modal>
+            <div className="w-100 text-center mt-2">
+              {/* <Dropdown style={{ marginBottom: "20px" }}>
           <Dropdown.Toggle variant="primary" id="roleDropdown">
             Select Role
           </Dropdown.Toggle>
@@ -1409,59 +1523,59 @@ export default function AdminDashboard() {
             <Dropdown.Item onClick={handleSupervisorButtonClick}>Supervisors</Dropdown.Item>
             <Dropdown.Item onClick={handleEmployeeButtonClick}>Employees</Dropdown.Item>
           </Dropdown.Menu>
-        </Dropdown>
+        </Dropdown> */}
 
-        {showHeads && (
-          <div>
-            <HeadList
-              heads={heads}
-              onFilterTasks={handleFilterTasks}
-              onHeadClick={onHeadClick}
-            />
-          </div>
-        )}
-        
-        {showUnitHeads && (
-          <div>
-            <UnitHeadList
-              unitHeads={unitHeads}
-              onFilterTasks={handleFilterTasks}
-              onUnitHeadClick={onUnitHeadClick}
-            />
-          </div>
-        )}
+              {showHeads && (
+                <div>
+                  <HeadList
+                    heads={heads}
+                    onFilterTasks={handleFilterTasks}
+                    onHeadClick={onHeadClick}
+                  />
+                </div>
+              )}
 
-        {showTeamLeaders && (
-          <div>
-            <TeamLeaderList
-              teamLeaders={teamLeaders}
-              onFilterTasks={handleFilterTasks}
-              onTeamLeaderBoxClick={onTeamLeaderClick}
-            />
-          </div>
-        )}
+              {showUnitHeads && (
+                <div>
+                  <UnitHeadList
+                    unitHeads={unitHeads}
+                    onFilterTasks={handleFilterTasks}
+                    onUnitHeadClick={onUnitHeadClick}
+                  />
+                </div>
+              )}
 
-        {showSupervisors && (
-          <div>
-            <SupervisorList
-              supervisors={supervisors}
-              onFilterTasks={handleFilterTasks}
-              onSupervisorBoxClick={onSupervisorClick}
-            />
-          </div>
-        )}
+              {showTeamLeaders && (
+                <div>
+                  <TeamLeaderList
+                    teamLeaders={teamLeaders}
+                    onFilterTasks={handleFilterTasks}
+                    onTeamLeaderBoxClick={onTeamLeaderClick}
+                  />
+                </div>
+              )}
 
-        {showEmployees && (
-          <div>
-            <EmployeeList
-              employees={employees}
-              onFilterTasks={handleFilterTasks}
-              onEmployeeBoxClick={onEmployeeClick}
-            />
-          </div>
-        )}
+              {showSupervisors && (
+                <div>
+                  <SupervisorList
+                    supervisors={supervisors}
+                    onFilterTasks={handleFilterTasks}
+                    onSupervisorBoxClick={onSupervisorClick}
+                  />
+                </div>
+              )}
 
-<Dropdown>
+              {showEmployees && (
+                <div>
+                  <EmployeeList
+                    employees={employees}
+                    onFilterTasks={handleFilterTasks}
+                    onEmployeeBoxClick={onEmployeeClick}
+                  />
+                </div>
+              )}
+
+              {/* <Dropdown>
           <Dropdown.Toggle variant="primary" id="assignRoleDropdown">
             Assign Roles
           </Dropdown.Toggle>
@@ -1471,103 +1585,103 @@ export default function AdminDashboard() {
             <Dropdown.Item onClick={() => setShowAssignTeamleader(true)}>Assign Team Leaders</Dropdown.Item>
             <Dropdown.Item onClick={() => setShowAssignUnitHead(true)}>Assign Unit Heads</Dropdown.Item>
           </Dropdown.Menu>
-        </Dropdown>
-        </div>
+        </Dropdown> */}
+            </div>
 
-      {/* <Button
+            {/* <Button
         variant="primary"
         onClick={() => setShowAssignEmployee(true)} // Show the AssignEmployee form
       >
         Assign Employees
       </Button> */}
 
-      {/* Assign Employee Form Modal */}
-      <Modal
-        show={showAssignEmployee}
-        onHide={() => setShowAssignEmployee(false)}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Assign Employees</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <AssignEmployee
-            supervisors={supervisors}
-            employees={employees}
-            onAssignEmployee={handleAssignEmployee} // Pass the callback
-          />
-        </Modal.Body>
-      </Modal>
+            {/* Assign Employee Form Modal */}
+            <Modal
+              show={showAssignEmployee}
+              onHide={() => setShowAssignEmployee(false)}
+            >
+              <Modal.Header closeButton>
+                <Modal.Title>Assign Employees</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <AssignEmployee
+                  supervisors={supervisors}
+                  employees={employees}
+                  onAssignEmployee={handleAssignEmployee} // Pass the callback
+                />
+              </Modal.Body>
+            </Modal>
 
-      {/* <Button variant="primary" onClick={() => setShowAssignSupervisor(true)}>
+            {/* <Button variant="primary" onClick={() => setShowAssignSupervisor(true)}>
         Assign Supervisors
       </Button> */}
 
-      {/* Assign Supervisor Form Modal */}
-      <Modal
-        show={showAssignSupervisor}
-        onHide={() => setShowAssignSupervisor(false)}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Assign Supervisors</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <AssignSupervisor
-            teamLeaders={teamLeaders}
-            supervisors={supervisors}
-            onAssignSupervisor={handleAssignSupervisor}
-          />
-        </Modal.Body>
-      </Modal>
+            {/* Assign Supervisor Form Modal */}
+            <Modal
+              show={showAssignSupervisor}
+              onHide={() => setShowAssignSupervisor(false)}
+            >
+              <Modal.Header closeButton>
+                <Modal.Title>Assign Supervisors</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <AssignSupervisor
+                  teamLeaders={teamLeaders}
+                  supervisors={supervisors}
+                  onAssignSupervisor={handleAssignSupervisor}
+                />
+              </Modal.Body>
+            </Modal>
 
-      {/* <Button variant="primary" onClick={() => setShowAssignTeamleader(true)}>
+            {/* <Button variant="primary" onClick={() => setShowAssignTeamleader(true)}>
         Assign Teamleaders
       </Button> */}
 
-      {/* Assign Teamleader Form Modal */}
-      <Modal
-        show={showAssignTeamleader}
-        onHide={() => setShowAssignTeamleader(false)}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Assign Teamleaders</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <AssignTeamLeader
-            teamLeaders={teamLeaders}
-            unitHeads={unitHeads}
-            onAssignTeamLeader={handleAssignTeamLeader}
-          />
-        </Modal.Body>
-      </Modal>
+            {/* Assign Teamleader Form Modal */}
+            <Modal
+              show={showAssignTeamleader}
+              onHide={() => setShowAssignTeamleader(false)}
+            >
+              <Modal.Header closeButton>
+                <Modal.Title>Assign Teamleaders</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <AssignTeamLeader
+                  teamLeaders={teamLeaders}
+                  unitHeads={unitHeads}
+                  onAssignTeamLeader={handleAssignTeamLeader}
+                />
+              </Modal.Body>
+            </Modal>
 
-      {/* <Button variant="primary" onClick={() => setShowAssignUnitHead(true)}>
+            {/* <Button variant="primary" onClick={() => setShowAssignUnitHead(true)}>
         Assign Unitheads
       </Button> */}
 
-      {/* Assign Unithead Form Modal */}
-      <Modal
-        show={showAssignUnitHead}
-        onHide={() => setShowAssignUnitHead(false)}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Assign Unitheads</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <AssignUnitHead
-            unitHeads={unitHeads}
-            onAssignUnitHead={handleAssignUnitHead}
-          />
-        </Modal.Body>
-      </Modal>
+            {/* Assign Unithead Form Modal */}
+            <Modal
+              show={showAssignUnitHead}
+              onHide={() => setShowAssignUnitHead(false)}
+            >
+              <Modal.Header closeButton>
+                <Modal.Title>Assign Unitheads</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <AssignUnitHead
+                  unitHeads={unitHeads}
+                  onAssignUnitHead={handleAssignUnitHead}
+                />
+              </Modal.Body>
+            </Modal>
 
-      {/* <div className="w-100 text-center mt-2">
+            {/* <div className="w-100 text-center mt-2">
         <Button variant="link" onClick={handleLogout}>
           Log Out
         </Button>
       </div> */}
-    </Container>
-    </Col>
-    </Row>
+          </Container>
+        </Col>
+      </Row>
     </Container>
   );
 }

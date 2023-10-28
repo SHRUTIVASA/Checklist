@@ -266,32 +266,51 @@ export default function EmployeeDashboard() {
       <Row>
         {/* Side Navigation */}
         <Col sm={2} className="bg-primary text-white p-0">
-        <Navbar expand="lg" variant="dark" className="flex-column h-100" style={{ backgroundColor: '#001D44' }}>
-  <Navbar.Brand>
-    <img
-      src={process.env.PUBLIC_URL + '/Logo.png'}
-      width="150"
-      height="150"
-      className="d-inline-block align-top"
-    />
-    <h4>Checklist App</h4>
-  </Navbar.Brand>
-  <Row className="w-100 mt-4 flex-grow-1">
-    <Col className="d-flex flex-column align-items-center justify-content-center">
-      <Nav className="flex-column d-flex justify-content-center flex-grow-1">
-        <Nav.Link active href="/supervisor-dashboard" className="mb-3 fs-5 d-flex align-items-center">
-          <AiOutlineUser style={{ marginRight: '10px' }} /> User Profile
-        </Nav.Link>
-        <Nav.Link active href="/supervisor-change-password" className="mb-3 fs-5 d-flex align-items-center">
-          <RiLockPasswordFill style={{ marginRight: '10px' }} /> Change Password
-        </Nav.Link>
-        <Nav.Link active onClick={handleLogout} className="mb-3 fs-5 d-flex align-items-center">
-          <AiOutlineLogout style={{ marginRight: '10px' }} /> Logout
-        </Nav.Link>
-      </Nav>
-    </Col>
-  </Row>
-</Navbar>
+          <Navbar
+            expand="lg"
+            variant="dark"
+            className="flex-column vh-100"
+            style={{ backgroundColor: "#001D44" }}
+          >
+            <Navbar.Brand>
+              <img
+                src={process.env.PUBLIC_URL + "/Logo.png"}
+                width="150"
+                height="150"
+                className="d-inline-block align-top"
+              />
+              <h4>Checklist App</h4>
+            </Navbar.Brand>
+            <Row className="w-100 mt-4 flex-grow-1">
+              <Col className="d-flex flex-column align-items-center justify-content-end">
+                <Nav className="flex-column d-flex justify-content-center">
+                  <Nav.Link
+                    active
+                    href="/supervisor-dashboard"
+                    className="mb-3 fs-5 d-flex align-items-center"
+                  >
+                    <AiOutlineUser style={{ marginRight: "10px" }} /> User
+                    Profile
+                  </Nav.Link>
+                  <Nav.Link
+                    active
+                    href="/supervisor-change-password"
+                    className="mb-3 fs-5 d-flex align-items-center"
+                  >
+                    <RiLockPasswordFill style={{ marginRight: "10px" }} />{" "}
+                    Change Password
+                  </Nav.Link>
+                  <Nav.Link
+                    active
+                    onClick={handleLogout}
+                    className="mb-3 fs-5 d-flex align-items-center"
+                  >
+                    <AiOutlineLogout style={{ marginRight: "10px" }} /> Logout
+                  </Nav.Link>
+                </Nav>
+              </Col>
+            </Row>
+          </Navbar>
         </Col>
 
         {/* Main Content */}
@@ -299,7 +318,9 @@ export default function EmployeeDashboard() {
           <Container className="border p-4" style={{ marginTop: "80px" }}>
             <Row className="w-100 text-center mb-4">
               <Col>
-                <h2 className="text-center mb-4 border-bottom pb-2">Welcome, {userData.name}</h2>
+                <h2 className="text-center mb-4 border-bottom pb-2">
+                  Welcome, {userData.name}
+                </h2>
               </Col>
             </Row>
             {error && (

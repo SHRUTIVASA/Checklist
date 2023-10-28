@@ -1,8 +1,8 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import {getAuth } from "firebase/auth";
-import {getFirestore} from "firebase/firestore";
-import {getStorage} from "firebase/storage";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCHSouusB1g-znIrFzM__DtEUy9YkXwSKY",
@@ -11,7 +11,7 @@ const firebaseConfig = {
   storageBucket: "checklist-app-c15bb.appspot.com",
   messagingSenderId: "24004038101",
   appId: "1:24004038101:web:b7c7b7ed201956b984415c",
-  measurementId: "G-4M7SMKQMR1"
+  measurementId: "G-4M7SMKQMR1",
 };
 
 const app = initializeApp(firebaseConfig);

@@ -1,10 +1,18 @@
 import React, { useState } from "react";
-import { Form, Button, Card, Alert, Container, Row, Col } from "react-bootstrap";
+import {
+  Form,
+  Button,
+  Card,
+  Alert,
+  Container,
+  Row,
+  Col,
+} from "react-bootstrap";
 import { useAuth } from "./contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { collection, getDocs, query, where } from "firebase/firestore"; // Import Firestore functions for querying documents
 import { db } from "./firebase";
-import Vector from './assets/vector.jpg';
+import Vector from "./assets/vector.jpg";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -38,22 +46,25 @@ const Login = () => {
 
         if (userRole === "Employee") {
           Navigate("/EmployeeDashboard");
-        }else if (userRole === "Admin") {
+        } else if (userRole === "Admin") {
           Navigate("/AdminDashboard");
-        }else if (userRole === "Supervisor") {
+        } else if (userRole === "Supervisor") {
           Navigate("/supervisors/${supervisorId}/dashboard");
         } else if (userRole === "TeamLeader") {
           Navigate("/TeamLeaderDashboard");
         } else if (userRole === "UnitHead") {
           Navigate("/UnitHeadDashboard");
-        }else if (userRole === "Head") {
+        } else if (userRole === "Head") {
           Navigate("/HeadDashboard");
         }
 
         // Fetch tasks based on the user's role and store them in the state
         const tasksCollection = collection(db, userRole); // Adjust the collection name as needed
 
-        const q = query(tasksCollection, where("assignedTo", "array-contains", currentUser.uid));
+        const q = query(
+          tasksCollection,
+          where("assignedTo", "array-contains", currentUser.uid)
+        );
         const querySnapshot = await getDocs(q);
 
         const tasksData = [];
@@ -74,10 +85,13 @@ const Login = () => {
     <Container fluid>
       <Row className="min-vh-100 flex-column flex-md-row justify-content-center align-items-center">
         {/* Left side (vector) */}
-        <Col md={6} className="d-flex align-items-center justify-content-center">
+        <Col
+          md={6}
+          className="d-flex align-items-center justify-content-center"
+        >
           <div>
             {/* Place your vector image or component here */}
-            <img src={ Vector } alt="Vector" className="img-fluid" />
+            <img src={Vector} alt="Vector" className="img-fluid" />
           </div>
         </Col>
 
@@ -121,7 +135,11 @@ const Login = () => {
                       onChange={(e) => setPassword(e.target.value)}
                     />
                   </Form.Group>
-                  <Button disabled={loading} className="w-100 mt-3" type="submit">
+                  <Button
+                    disabled={loading}
+                    className="w-100 mt-3"
+                    type="submit"
+                  >
                     Log In
                   </Button>
                 </Form>

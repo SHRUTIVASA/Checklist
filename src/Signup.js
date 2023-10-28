@@ -1,10 +1,26 @@
 import React, { useState } from "react";
-import { Form, Button, Card, Alert, Container, Col, Row } from "react-bootstrap";
+import {
+  Form,
+  Button,
+  Card,
+  Alert,
+  Container,
+  Col,
+  Row,
+} from "react-bootstrap";
 import { useAuth } from "./contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
-import { doc, setDoc, collection, addDoc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
-import { db } from "./firebase"; 
-import Vector from './assets/vector.jpg';
+import {
+  doc,
+  setDoc,
+  collection,
+  addDoc,
+  updateDoc,
+  arrayUnion,
+  getDoc,
+} from "firebase/firestore";
+import { db } from "./firebase";
+import Vector from "./assets/vector.jpg";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -55,7 +71,7 @@ export default function Signup() {
         email: email,
         role: role,
         uid: user.uid, // You can set the role as needed
-        tasks: [] // Initialize tasks as an empty array
+        tasks: [], // Initialize tasks as an empty array
       };
 
       // Add the user data to Firestore
@@ -68,36 +84,35 @@ export default function Signup() {
         await updateAdminDocument(user.uid);
       }
 
-// Function to update the admin document with the user's UID
-async function updateAdminDocument(userUID) {
-  try {
-    const adminDocRef = doc(db, "admin", "Vh5meuRE7VnxvufEkpkX"); 
-    const adminDocSnapshot = await getDoc(adminDocRef);
+      // Function to update the admin document with the user's UID
+      async function updateAdminDocument(userUID) {
+        try {
+          const adminDocRef = doc(db, "admin", "Vh5meuRE7VnxvufEkpkX");
+          const adminDocSnapshot = await getDoc(adminDocRef);
 
-    if (adminDocSnapshot.exists()) {
-      // If the admin document exists, update it by adding the user's UID to the 'assigned' array
-      const adminData = adminDocSnapshot.data();
-      const assignedArray = adminData.assigned || [];
-      assignedArray.push(userUID);
+          if (adminDocSnapshot.exists()) {
+            // If the admin document exists, update it by adding the user's UID to the 'assigned' array
+            const adminData = adminDocSnapshot.data();
+            const assignedArray = adminData.assigned || [];
+            assignedArray.push(userUID);
 
-      await updateDoc(adminDocRef, {
-        assigned: assignedArray // Update the 'assigned' array with the user's UID
-      });
+            await updateDoc(adminDocRef, {
+              assigned: assignedArray, // Update the 'assigned' array with the user's UID
+            });
 
-      console.log("User added to admin document: ", userUID);
-    } else {
-      // If the admin document doesn't exist, create it and set the 'assigned' array
-      await setDoc(adminDocRef, {
-        assigned: [userUID] // Create the 'assigned' array with the user's UID
-      });
+            console.log("User added to admin document: ", userUID);
+          } else {
+            // If the admin document doesn't exist, create it and set the 'assigned' array
+            await setDoc(adminDocRef, {
+              assigned: [userUID], // Create the 'assigned' array with the user's UID
+            });
 
-      console.log("Admin document created with user: ", userUID);
-    }
-  } catch (error) {
-    console.error("Error updating/admin document:", error);
-  }
-}
-
+            console.log("Admin document created with user: ", userUID);
+          }
+        } catch (error) {
+          console.error("Error updating/admin document:", error);
+        }
+      }
 
       if (role === "Employee") {
         Navigate("/EmployeeDashboard");
@@ -107,10 +122,9 @@ async function updateAdminDocument(userUID) {
         Navigate("/TeamLeaderDashboard");
       } else if (role === "UnitHead") {
         Navigate("/UnitHeadDashboard");
-      }else if (role === "Head") {
+      } else if (role === "Head") {
         Navigate("/HeadDashboard");
       }
-
     } catch (error) {
       if (error.code === "auth/invalid-email") {
         setError("Invalid email address.");
@@ -131,7 +145,10 @@ async function updateAdminDocument(userUID) {
     <Container fluid>
       <Row className="min-vh-100 flex-column flex-md-row justify-content-center align-items-center">
         {/* Left side (vector) */}
-        <Col md={6} className="d-flex align-items-center justify-content-center">
+        <Col
+          md={6}
+          className="d-flex align-items-center justify-content-center"
+        >
           <div>
             <img src={Vector} alt="Vector" className="img-fluid" />
           </div>
@@ -195,7 +212,11 @@ async function updateAdminDocument(userUID) {
                     />
                   </Form.Group>
 
-                  <Button disabled={loading} className="w-100 mt-3" type="submit">
+                  <Button
+                    disabled={loading}
+                    className="w-100 mt-3"
+                    type="submit"
+                  >
                     Sign Up
                   </Button>
                 </Form>
