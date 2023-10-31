@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/Checklist/static/css/main.9a3f6b53.css",
+    "main.js": "/Checklist/static/js/main.20fb7368.js",
+    "static/media/vector.jpg": "/Checklist/static/media/vector.5ddd2f471683413613d6.jpg",
+    "index.html": "/Checklist/index.html",
+    "main.9a3f6b53.css.map": "/Checklist/static/css/main.9a3f6b53.css.map",
+    "main.20fb7368.js.map": "/Checklist/static/js/main.20fb7368.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.9a3f6b53.css",
+    "static/js/main.20fb7368.js"
+  ]
+}
