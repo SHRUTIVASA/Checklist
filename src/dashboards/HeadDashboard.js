@@ -300,6 +300,7 @@ export default function HeadDashboard() {
     setError("");
     try {
       await logout();
+      Navigate("/");
       // Redirect to the login page or any other page as needed
     } catch (err) {
       setError("Failed to log out");
