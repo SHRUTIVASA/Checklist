@@ -197,6 +197,7 @@ export default function TeamLeaderDashboard() {
     setError("");
     try {
       await logout();
+      Navigate("/login");
       // Redirect to the login page or any other page as needed
     } catch (err) {
       setError("Failed to log out");
