@@ -24,10 +24,10 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/signup" element={<Signup />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
 
-          <Route path="/" element={<PrivateRoute />}>
+          {/* <Route path="/" element={<PrivateRoute />}> */}
             <Route path="/Dashboard" element={<DashboardRouter />} />
             <Route path="/EmployeeDashboard" element={<EmployeeDashboard />} />
             <Route
@@ -41,7 +41,7 @@ function App() {
             <Route path="/UnitHeadDashboard" element={<UnitHeadDashboard />} />
             <Route path="/AdminDashboard" element={<AdminDashboard />} />
             <Route path="/HeadDashboard" element={<HeadDashboard />} />
-          </Route>
+          {/* </Route> */}
         </Routes>
       </AuthProvider>
     </Router>
