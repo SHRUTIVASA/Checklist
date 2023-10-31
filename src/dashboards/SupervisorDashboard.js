@@ -29,6 +29,7 @@ import TaskRow from "../TaskRow";
 import "../styles/EmployeeDashboard.css";
 import { AiOutlineLogout, AiOutlineUser } from "react-icons/ai";
 import { RiLockPasswordFill } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
 
 export default function SupervisorDashboard() {
   const [error, setError] = useState("");
@@ -53,6 +54,8 @@ export default function SupervisorDashboard() {
   const [subtaskNames, setSubtaskNames] = useState([]);
 
   const [filteredTasks, setFilteredTasks] = useState([]);
+
+  const Navigate = useNavigate();
 
   const onFilterTasks = (status) => {
     const filteredTasks = tasks.filter((task) => task.status === status);

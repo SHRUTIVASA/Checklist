@@ -34,6 +34,7 @@ import TaskRow from "../TaskRow";
 import "../styles/EmployeeDashboard.css";
 import { AiOutlineUser, AiOutlineLogout } from "react-icons/ai";
 import { RiLockPasswordFill } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
 
 export default function HeadDashboard() {
   const [selectedTeamLeaderId, setSelectedTeamLeaderId] = useState(null);
@@ -80,6 +81,8 @@ export default function HeadDashboard() {
   const [showTeamLeaderBoxes, setShowTeamLeaderBoxes] = useState(false);
   const [assignedEmployees, setAssignedEmployees] = useState([]);
   const [filteredSupervisors, setFilteredSupervisors] = useState([]);
+
+  const Navigate = useNavigate();
 
   const onFilterTasks = (status) => {
     // Implement your filtering logic here and update the filteredTasks state

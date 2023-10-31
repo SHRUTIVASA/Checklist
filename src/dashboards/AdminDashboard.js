@@ -42,6 +42,7 @@ import AssignUnitHead from "../AssignUnitHead";
 import "../styles/EmployeeDashboard.css";
 import { AiOutlineUser, AiOutlineLogout } from "react-icons/ai";
 import { RiLockPasswordFill } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminDashboard() {
   const { currentUser, logout } = useAuth();
@@ -118,6 +119,8 @@ export default function AdminDashboard() {
   const [assignedEmployees, setAssignedEmployees] = useState([]);
   const [filteredSupervisors, setFilteredSupervisors] = useState([]);
   const [filteredUnitHeads, setFilteredUnitHeads] = useState([]);
+
+  const Navigate = useNavigate();
 
   const onFilterTasks = (status) => {
     // Implement your filtering logic here and update the filteredTasks state

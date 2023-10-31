@@ -30,6 +30,7 @@ import EmployeeList from "../EmployeeList";
 import TaskRow from "../TaskRow";
 import { AiOutlineUser, AiOutlineLogout } from "react-icons/ai";
 import { RiLockPasswordFill } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
 
 export default function UnitHeadDashboard() {
   const [selectedTeamLeaderId, setSelectedTeamLeaderId] = useState(null);
@@ -70,6 +71,8 @@ export default function UnitHeadDashboard() {
   const [assignedEmployees, setAssignedEmployees] = useState([]);
   const [filteredSupervisors, setFilteredSupervisors] = useState([]);
   const [userData, setUserData] = useState(null);
+
+  const Navigate = useNavigate();
 
   const fetchTasks = async () => {
     try {

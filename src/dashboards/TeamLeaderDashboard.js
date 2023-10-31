@@ -30,6 +30,7 @@ import TaskRow from "../TaskRow";
 import "../styles/EmployeeDashboard.css";
 import { AiOutlineUser, AiOutlineLogout } from "react-icons/ai";
 import { RiLockPasswordFill } from "react-icons/ri";
+import { useNavigate } from "react-router-dom";
 
 export default function TeamLeaderDashboard() {
   const [selectedSupervisorId, setSelectedSupervisorId] = useState(null);
@@ -64,6 +65,8 @@ export default function TeamLeaderDashboard() {
   const [filteredTasks, setFilteredTasks] = useState([]);
 
   const [assignedEmployees, setAssignedEmployees] = useState([]);
+
+  const Navigate = useNavigate();
 
   const onFilterTasks = (status) => {
     const filteredTasks = tasks.filter((task) => task.status === status);
