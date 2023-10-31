@@ -152,7 +152,7 @@ export default function SupervisorDashboard() {
     setError("");
     try {
       await logout();
-      Navigate("/login");
+      Navigate("/");
     } catch (err) {
       setError("Failed to log out");
       console.error("Logout error", err);
