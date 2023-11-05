@@ -37,20 +37,32 @@ h2 {
   background-color: #ffffff;
   /* border: 1px solid #e5e5e5; */
   border-radius: 5px;
-  padding: 10px;
+  /* padding: 10px; */
   /* margin-bottom: 20px; */
-  width: 220px;
-  height: 100px;
+  /* width: 200px; */
+  width: 90%;
+  /* height: 80px; */
+  height: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .formal-card {
   background-color: #ffffff;
-  border: 1px solid #e5e5e5;
+  /* border: 1px solid #e5e5e5; */
   border-radius: 5px;
-  padding: 10px;
+  /* padding: 10px; */
   /* margin-bottom: 20px; */
   /* width: 220px;
     height: 100px; */
+  width: 70%;
+  height: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .formal-card img {
