@@ -12,6 +12,7 @@ import Login from "./Login";
 import Signup from "./Signup";
 import ForgotPassword from "./ForgotPassword";
 import AdminDashboard from "./dashboards/AdminDashboard";
+import UserProfile from "./UserProfile";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
             <Route path="/UnitHeadDashboard" element={<UnitHeadDashboard />} />
             <Route path="/AdminDashboard" element={<AdminDashboard />} />
             <Route path="/HeadDashboard" element={<HeadDashboard />} />
+            <Route path="/UserProfile" element={<UserProfile />} />
           {/* </Route> */}
         </Routes>
       </AuthProvider>

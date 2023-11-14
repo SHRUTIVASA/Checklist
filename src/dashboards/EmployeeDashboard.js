@@ -286,7 +286,7 @@ export default function EmployeeDashboard() {
                 <Nav className="flex-column d-flex justify-content-center">
                   <Nav.Link
                     active
-                    href="/supervisor-dashboard"
+                    href="/UserProfile"
                     className="mb-3 fs-5 d-flex align-items-center"
                   >
                     <AiOutlineUser style={{ marginRight: "10px" }} /> User
