@@ -26,6 +26,7 @@ import TaskRow from "../TaskRow";
 import "../styles/EmployeeDashboard.css";
 import { AiOutlineUser, AiOutlineLogout } from "react-icons/ai";
 import { RiLockPasswordFill } from "react-icons/ri";
+import UserProfile from "../UserProfile";
 
 export default function EmployeeDashboard() {
   const [error, setError] = useState("");
@@ -60,6 +61,17 @@ export default function EmployeeDashboard() {
       console.error("Logout error", err);
     }
   };
+
+  const handleUp = async () => {
+    setError("");
+    try {
+      Navigate("/UserProfile");
+    } catch (err) {
+      setError("Failed to show your User Profile");
+      console.error("Error", err);
+    }
+  };
+
 
   const fetchUserData = async () => {
     try {
@@ -286,7 +298,7 @@ export default function EmployeeDashboard() {
                 <Nav className="flex-column d-flex justify-content-center">
                   <Nav.Link
                     active
-                    href="/UserProfile"
+                    onClick={handleUp}
                     className="mb-3 fs-5 d-flex align-items-center"
                   >
                     <AiOutlineUser style={{ marginRight: "10px" }} /> User
