@@ -28,6 +28,7 @@ import EmployeeList from "../EmployeeList";
 import TaskRow from "../TaskRow";
 import "../styles/EmployeeDashboard.css";
 import { AiOutlineLogout, AiOutlineUser } from "react-icons/ai";
+import { FaTasks } from "react-icons/fa";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 
@@ -481,6 +482,13 @@ export default function SupervisorDashboard() {
               <Col className="d-flex flex-column align-items-center justify-content-end">
                 <Nav className="flex-column d-flex justify-content-center">
                   <Nav.Link
+                  active
+                  onClick={() => setShowTaskForm(true)}
+                  className="mb-3 fs-5 d-flex align-items-center"
+                >
+                  <FaTasks style={{ marginRight: "10px" }} /> Assign Task
+                </Nav.Link>
+                  <Nav.Link
                     active
                     onClick={handleUp}
                     className="mb-3 fs-5 d-flex align-items-center"
@@ -525,13 +533,13 @@ export default function SupervisorDashboard() {
                   onEmployeeClick={handleEmployeeClick}
                   setSelectedEmployeeTasks={setSelectedEmployeeTasks}
                 />
-                <Button
+                {/* <Button
                   type="button"
                   variant="primary"
                   onClick={() => setShowTaskForm(true)}
                 >
                   Assign Task
-                </Button>
+                </Button> */}
               </Col>
             </Row>
             {/* Task Assignment Form Modal */}
@@ -698,7 +706,7 @@ export default function SupervisorDashboard() {
                 </div>
               </Modal.Body>
             </Modal>
-            <Row className="mt-4">
+            <Row>
               <Col>
                 <h4 className="text-dark text-center">Task Statistics</h4>
                 <Row className="mt-4">
@@ -722,7 +730,7 @@ export default function SupervisorDashboard() {
                           /> */}
                           <div className="stat-card-info">
                             <Card.Title>Assigned Tasks</Card.Title>
-                            <Card.Text>{numTasksAssigned}</Card.Text>
+                            <Card.Text className="text-center">{numTasksAssigned}</Card.Text>
                           </div>
                         </div>
                       </Card.Body>
@@ -748,7 +756,7 @@ export default function SupervisorDashboard() {
                           /> */}
                           <div className="stat-card-info">
                             <Card.Title>Pending Tasks</Card.Title>
-                            <Card.Text>{numTasksPending}</Card.Text>
+                            <Card.Text className="text-center">{numTasksPending}</Card.Text>
                           </div>
                         </div>
                       </Card.Body>
@@ -774,7 +782,7 @@ export default function SupervisorDashboard() {
                           /> */}
                           <div className="stat-card-info">
                             <Card.Title>In Progress Tasks</Card.Title>
-                            <Card.Text>{inProgressTasks}</Card.Text>
+                            <Card.Text className="text-center">{inProgressTasks}</Card.Text>
                           </div>
                         </div>
                       </Card.Body>
@@ -800,7 +808,7 @@ export default function SupervisorDashboard() {
                           /> */}
                           <div className="stat-card-info">
                             <Card.Title>Completed Tasks</Card.Title>
-                            <Card.Text>{numTasksCompleted}</Card.Text>
+                            <Card.Text className="text-center">{numTasksCompleted}</Card.Text>
                           </div>
                         </div>
                       </Card.Body>

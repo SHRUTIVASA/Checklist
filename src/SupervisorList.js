@@ -278,7 +278,7 @@ const SupervisorList = ({
                           /> */}
                         <div className="stat-card-info">
                           <Card.Title>Assigned Tasks</Card.Title>
-                          <Card.Text>
+                          <Card.Text className="text-center">
                             {supervisorStatistics?.numTasksAssigned}
                           </Card.Text>
                         </div>
@@ -325,7 +325,7 @@ const SupervisorList = ({
                           /> */}
                         <div className="stat-card-info">
                           <Card.Title>Pending Tasks</Card.Title>
-                          <Card.Text>
+                          <Card.Text className="text-center">
                             {supervisorStatistics?.numTasksPending}
                           </Card.Text>
                         </div>
@@ -372,7 +372,7 @@ const SupervisorList = ({
                           /> */}
                         <div className="stat-card-info">
                           <Card.Title>In Progress Tasks</Card.Title>
-                          <Card.Text>
+                          <Card.Text className="text-center">
                             {supervisorStatistics?.numTasksInProgress}
                           </Card.Text>
                         </div>
@@ -419,7 +419,7 @@ const SupervisorList = ({
                           /> */}
                         <div className="stat-card-info">
                           <Card.Title>Completed Tasks</Card.Title>
-                          <Card.Text>
+                          <Card.Text className="text-center">
                             {supervisorStatistics?.numTasksCompleted}
                           </Card.Text>
                         </div>

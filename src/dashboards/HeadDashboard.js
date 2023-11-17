@@ -826,7 +826,7 @@ export default function HeadDashboard() {
                           /> */}
                           <div className="stat-card-info">
                             <Card.Title>Assigned Tasks</Card.Title>
-                            <Card.Text>{numTasksAssigned}</Card.Text>
+                            <Card.Text className="text-center">{numTasksAssigned}</Card.Text>
                           </div>
                         </div>
                       </Card.Body>
@@ -852,7 +852,7 @@ export default function HeadDashboard() {
                           /> */}
                           <div className="stat-card-info">
                             <Card.Title>Pending Tasks</Card.Title>
-                            <Card.Text>{numTasksPending}</Card.Text>
+                            <Card.Text className="text-center">{numTasksPending}</Card.Text>
                           </div>
                         </div>
                       </Card.Body>
@@ -878,7 +878,7 @@ export default function HeadDashboard() {
                           /> */}
                           <div className="stat-card-info">
                             <Card.Title>In Progress Tasks</Card.Title>
-                            <Card.Text>{inProgressTasks}</Card.Text>
+                            <Card.Text className="text-center">{inProgressTasks}</Card.Text>
                           </div>
                         </div>
                       </Card.Body>
@@ -904,7 +904,7 @@ export default function HeadDashboard() {
                           /> */}
                           <div className="stat-card-info">
                             <Card.Title>Completed Tasks</Card.Title>
-                            <Card.Text>{completedTasks}</Card.Text>
+                            <Card.Text className="text-center">{completedTasks}</Card.Text>
                           </div>
                         </div>
                       </Card.Body>

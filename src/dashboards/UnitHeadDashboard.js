@@ -689,7 +689,7 @@ export default function UnitHeadDashboard() {
                           /> */}
                           <div className="stat-card-info">
                             <Card.Title>Assigned Tasks</Card.Title>
-                            <Card.Text>{numTasksAssigned}</Card.Text>
+                            <Card.Text className="text-center">{numTasksAssigned}</Card.Text>
                           </div>
                         </div>
                       </Card.Body>
@@ -715,7 +715,7 @@ export default function UnitHeadDashboard() {
                           /> */}
                           <div className="stat-card-info">
                             <Card.Title>Pending Tasks</Card.Title>
-                            <Card.Text>{numTasksPending}</Card.Text>
+                            <Card.Text className="text-center">{numTasksPending}</Card.Text>
                           </div>
                         </div>
                       </Card.Body>
@@ -741,7 +741,7 @@ export default function UnitHeadDashboard() {
                           /> */}
                           <div className="stat-card-info">
                             <Card.Title>In Progress Tasks</Card.Title>
-                            <Card.Text>{numTasksinProgress}</Card.Text>
+                            <Card.Text className="text-center">{numTasksinProgress}</Card.Text>
                           </div>
                         </div>
                       </Card.Body>
@@ -767,7 +767,7 @@ export default function UnitHeadDashboard() {
                           /> */}
                           <div className="stat-card-info">
                             <Card.Title>Completed Tasks</Card.Title>
-                            <Card.Text>{numTasksCompleted}</Card.Text>
+                            <Card.Text className="text-center">{numTasksCompleted}</Card.Text>
                           </div>
                         </div>
                       </Card.Body>

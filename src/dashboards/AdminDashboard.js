@@ -41,6 +41,7 @@ import AssignTeamLeader from "../AssignTeamLeader";
 import AssignUnitHead from "../AssignUnitHead";
 import "../styles/EmployeeDashboard.css";
 import { AiOutlineUser, AiOutlineLogout } from "react-icons/ai";
+import { FaTasks } from "react-icons/fa";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 
@@ -1211,6 +1212,13 @@ export default function AdminDashboard() {
                   </Nav.Link>
                   <Nav.Link
                     active
+                    onClick={() => setShowTaskForm(true)}
+                    className="mb-3 fs-5 d-flex align-items-center"
+                  >
+                    <FaTasks style={{ marginRight: "10px" }} /> Assign Task
+                  </Nav.Link>
+                  <Nav.Link
+                    active
                     onClick={handleUp}
                     className="mb-3 fs-5 d-flex align-items-center"
                   >
@@ -1346,13 +1354,13 @@ export default function AdminDashboard() {
                     </Button>
                   </div>
                 )}
-                <Button
+                {/* <Button
                   type="button"
                   variant="primary"
                   onClick={() => setShowTaskForm(true)}
                 >
                   Assign Task
-                </Button>
+                </Button> */}
               </Col>
             </Row>
             {/* Task Assignment Form Modal */}

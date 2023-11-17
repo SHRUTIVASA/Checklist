@@ -29,6 +29,7 @@ import EmployeeList from "../EmployeeList";
 import TaskRow from "../TaskRow";
 import "../styles/EmployeeDashboard.css";
 import { AiOutlineUser, AiOutlineLogout } from "react-icons/ai";
+import { FaTasks } from "react-icons/fa";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 
@@ -598,6 +599,13 @@ export default function TeamLeaderDashboard() {
                 <Nav className="flex-column d-flex justify-content-center">
                   <Nav.Link
                     active
+                    onClick={() => setShowTaskForm(true)}
+                    className="mb-3 fs-5 d-flex align-items-center"
+                  >
+                    <FaTasks style={{ marginRight: "10px" }} /> Assign Task
+                  </Nav.Link>
+                  <Nav.Link
+                    active
                     onClick={handleUp}
                     className="mb-3 fs-5 d-flex align-items-center"
                   >
@@ -662,13 +670,13 @@ export default function TeamLeaderDashboard() {
                       toggleEmployeeBoxes={toggleEmployeeBoxes}
                     />
 
-                    <Button
+                    {/* <Button
                       type="button"
                       variant="primary"
                       onClick={() => setShowTaskForm(true)}
                     >
                       Assign Task
-                    </Button>
+                    </Button> */}
                   </div>
                 )}
               </Col>
@@ -841,7 +849,7 @@ export default function TeamLeaderDashboard() {
                 </div>
               </Modal.Body>
             </Modal>
-            <Row className="mt-4">
+            <Row>
               <Col>
                 <h4 className="text-dark text-center">Task Statistics</h4>
                 <Row className="mt-4">
@@ -865,7 +873,7 @@ export default function TeamLeaderDashboard() {
                           /> */}
                           <div className="stat-card-info">
                             <Card.Title>Assigned Tasks</Card.Title>
-                            <Card.Text>{numTasksAssigned}</Card.Text>
+                            <Card.Text className="text-center">{numTasksAssigned}</Card.Text>
                           </div>
                         </div>
                       </Card.Body>
@@ -891,7 +899,7 @@ export default function TeamLeaderDashboard() {
                           /> */}
                           <div className="stat-card-info">
                             <Card.Title>Pending Tasks</Card.Title>
-                            <Card.Text>{pendingTasks}</Card.Text>
+                            <Card.Text className="text-center">{pendingTasks}</Card.Text>
                           </div>
                         </div>
                       </Card.Body>
@@ -917,7 +925,7 @@ export default function TeamLeaderDashboard() {
                           /> */}
                           <div className="stat-card-info">
                             <Card.Title>In Progress Tasks</Card.Title>
-                            <Card.Text>{inProgressTasks}</Card.Text>
+                            <Card.Text className="text-center">{inProgressTasks}</Card.Text>
                           </div>
                         </div>
                       </Card.Body>
@@ -943,7 +951,7 @@ export default function TeamLeaderDashboard() {
                           /> */}
                           <div className="stat-card-info">
                             <Card.Title>Completed Tasks</Card.Title>
-                            <Card.Text>{completedTasks}</Card.Text>
+                            <Card.Text className="text-center">{completedTasks}</Card.Text>
                           </div>
                         </div>
                       </Card.Body>
