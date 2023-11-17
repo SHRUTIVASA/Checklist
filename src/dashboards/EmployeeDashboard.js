@@ -65,7 +65,7 @@ export default function EmployeeDashboard() {
   const handleUp = async () => {
     setError("");
     try {
-      Navigate("/UserProfile");
+      Navigate("/UserProfile", { state: { userData: userData } });
     } catch (err) {
       setError("Failed to show your User Profile");
       console.error("Error", err);
@@ -304,14 +304,14 @@ export default function EmployeeDashboard() {
                     <AiOutlineUser style={{ marginRight: "10px" }} /> User
                     Profile
                   </Nav.Link>
-                  <Nav.Link
+                  {/* <Nav.Link
                     active
                     href="/supervisor-change-password"
                     className="mb-3 fs-5 d-flex align-items-center"
                   >
                     <RiLockPasswordFill style={{ marginRight: "10px" }} />{" "}
                     Change Password
-                  </Nav.Link>
+                  </Nav.Link> */}
                   <Nav.Link
                     active
                     onClick={handleLogout}
@@ -354,7 +354,7 @@ export default function EmployeeDashboard() {
                 <h4 className="text-dark text-center">Task Statistics</h4>
                 <Row className="mt-4">
                   <Col
-                    style={{ paddingLeft: 0, paddingRight: 0 }}
+                    style={{ paddingLeft: 0, paddingRight: 0, backgroundColor: '#f5f5f5' }}
                     className="formal-card"
                   >
                     <Card
@@ -380,7 +380,7 @@ export default function EmployeeDashboard() {
                     </Card>
                   </Col>
                   <Col
-                    style={{ paddingLeft: 0, paddingRight: 0 }}
+                    style={{ paddingLeft: 0, paddingRight: 0, backgroundColor: '#f5f5f5' }}
                     className="formal-card"
                   >
                     <Card
@@ -406,7 +406,7 @@ export default function EmployeeDashboard() {
                     </Card>
                   </Col>
                   <Col
-                    style={{ paddingLeft: 0, paddingRight: 0 }}
+                    style={{ paddingLeft: 0, paddingRight: 0, backgroundColor: '#f5f5f5' }}
                     className="formal-card"
                   >
                     <Card
@@ -432,7 +432,7 @@ export default function EmployeeDashboard() {
                     </Card>
                   </Col>
                   <Col
-                    style={{ paddingLeft: 0, paddingRight: 0 }}
+                    style={{ paddingLeft: 0, paddingRight: 0, backgroundColor: '#f5f5f5' }}
                     className="formal-card"
                   >
                     <Card

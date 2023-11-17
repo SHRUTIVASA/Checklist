@@ -57,6 +57,16 @@ export default function SupervisorDashboard() {
 
   const Navigate = useNavigate();
 
+  const handleUp = async () => {
+    setError("");
+    try {
+      Navigate("/UserProfile", { state: { userData: userData } });
+    } catch (err) {
+      setError("Failed to show your User Profile");
+      console.error("Error", err);
+    }
+  };
+
   const onFilterTasks = (status) => {
     const filteredTasks = tasks.filter((task) => task.status === status);
     setFilteredTasks(filteredTasks);
@@ -472,20 +482,20 @@ export default function SupervisorDashboard() {
                 <Nav className="flex-column d-flex justify-content-center">
                   <Nav.Link
                     active
-                    href="/supervisor-dashboard"
+                    onClick={handleUp}
                     className="mb-3 fs-5 d-flex align-items-center"
                   >
                     <AiOutlineUser style={{ marginRight: "10px" }} /> User
                     Profile
                   </Nav.Link>
-                  <Nav.Link
+                  {/* <Nav.Link
                     active
                     href="/supervisor-change-password"
                     className="mb-3 fs-5 d-flex align-items-center"
                   >
                     <RiLockPasswordFill style={{ marginRight: "10px" }} />{" "}
                     Change Password
-                  </Nav.Link>
+                  </Nav.Link> */}
                   <Nav.Link
                     active
                     onClick={handleLogout}
@@ -693,7 +703,7 @@ export default function SupervisorDashboard() {
                 <h4 className="text-dark text-center">Task Statistics</h4>
                 <Row className="mt-4">
                   <Col
-                    style={{ paddingLeft: 0, paddingRight: 0 }}
+                    style={{ paddingLeft: 0, paddingRight: 0, backgroundColor: '#f5f5f5' }}
                     className="formal-card"
                   >
                     <Card
@@ -719,7 +729,7 @@ export default function SupervisorDashboard() {
                     </Card>
                   </Col>
                   <Col
-                    style={{ paddingLeft: 0, paddingRight: 0 }}
+                    style={{ paddingLeft: 0, paddingRight: 0, backgroundColor: '#f5f5f5' }}
                     className="formal-card"
                   >
                     <Card
@@ -745,7 +755,7 @@ export default function SupervisorDashboard() {
                     </Card>
                   </Col>
                   <Col
-                    style={{ paddingLeft: 0, paddingRight: 0 }}
+                    style={{ paddingLeft: 0, paddingRight: 0, backgroundColor: '#f5f5f5' }}
                     className="formal-card"
                   >
                     <Card
@@ -771,7 +781,7 @@ export default function SupervisorDashboard() {
                     </Card>
                   </Col>
                   <Col
-                    style={{ paddingLeft: 0, paddingRight: 0 }}
+                    style={{ paddingLeft: 0, paddingRight: 0, backgroundColor: '#f5f5f5' }}
                     className="formal-card"
                   >
                     <Card

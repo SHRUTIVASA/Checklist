@@ -6,7 +6,7 @@ import TeamLeaderDashboard from "./dashboards/TeamLeaderDashboard";
 import SupervisorDashboard from "./dashboards/SupervisorDashboard";
 import UnitHeadDashboard from "./dashboards/UnitHeadDashboard";
 import HeadDashboard from "./dashboards/HeadDashboard";
-import { HashRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 import Login from "./Login";
 import Signup from "./Signup";

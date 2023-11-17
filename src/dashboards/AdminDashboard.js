@@ -46,6 +46,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function AdminDashboard() {
   const { currentUser, logout } = useAuth();
+  const [userData, setUserData] = useState(null);
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -121,6 +122,22 @@ export default function AdminDashboard() {
   const [filteredUnitHeads, setFilteredUnitHeads] = useState([]);
 
   const Navigate = useNavigate();
+
+  useEffect(() => {
+    if (currentUser) {
+      setUserData(currentUser);
+    }
+  }, [currentUser]);
+
+  const handleUp = async () => {
+    setError("");
+    try {
+      Navigate("/UserProfile", { state: { userData: userData } });
+    } catch (err) {
+      setError("Failed to show your User Profile");
+      console.error("Error", err);
+    }
+  };
 
   const onFilterTasks = (status) => {
     // Implement your filtering logic here and update the filteredTasks state
@@ -1194,20 +1211,20 @@ export default function AdminDashboard() {
                   </Nav.Link>
                   <Nav.Link
                     active
-                    href="/supervisor-dashboard"
+                    onClick={handleUp}
                     className="mb-3 fs-5 d-flex align-items-center"
                   >
                     <AiOutlineUser style={{ marginRight: "10px" }} /> User
                     Profile
                   </Nav.Link>
-                  <Nav.Link
+                  {/* <Nav.Link
                     active
                     href="/supervisor-change-password"
                     className="mb-3 fs-5 d-flex align-items-center"
                   >
                     <RiLockPasswordFill style={{ marginRight: "10px" }} />{" "}
                     Change Password
-                  </Nav.Link>
+                  </Nav.Link> */}
                   <Nav.Link
                     active
                     onClick={handleLogout}
